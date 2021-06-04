@@ -7,7 +7,7 @@ from simulation.utils import *
 class Cockroach(Agent):
     """ """
     def __init__(
-            self, pos, v, state, index: int, image: str = "experiments/aggregation/images/ant.png"
+            self, pos, v, flock, state, index: int, image: str = "experiments/aggregation/images/ant.png"
     ) -> None:
         super(Cockroach, self).__init__(
             pos,
@@ -22,6 +22,7 @@ class Cockroach(Agent):
             index=index
         )
         self.state = state
+        self.flock = flock
 
     def change_state(self,new_state):
         self.state = new_state
@@ -29,7 +30,9 @@ class Cockroach(Agent):
     def site_behavior(self):
         if self.pos == #check if cockroach is in the site which is round
             if self.state == "wandering":
-                if np.random.choice([True,False],p=[config["cockroach"]["joining_probability"],1-config["cockroach"]["joining_probability"]]):
+                nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
+                probability = config["base"]["n_agents"]/nr_neighbours
+                if np.random.choice([True,False],p=[probability,1-probability]):
                     self.change_state("joining")
 
     def update_actions(self):

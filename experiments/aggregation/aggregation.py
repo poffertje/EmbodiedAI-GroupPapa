@@ -36,21 +36,12 @@ class Aggregations(Swarm):
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
 
-            # # if obstacles present re-estimate the coordinates
-            # if config["base"]["obstacles"]:
-            #     if config["flock"]["outside"]:
-            #         while (
-            #                 max_x >= coordinates[0] >= min_x
-            #                 and max_y >= coordinates[1] >= min_y
-            #         ):
-            #             coordinates = generate_coordinates(self.screen)
-            #     else:
-            #         while (
-            #                 coordinates[0] >= max_x
-            #                 or coordinates[0] <= min_x
-            #                 or coordinates[1] >= max_y
-            #                 or coordinates[1] <= min_y
-            #         ):
-            #             coordinates = generate_coordinates(self.screen)
+            while (
+                    coordinates[0] >= max_x
+                    or coordinates[0] <= min_x
+                    or coordinates[1] >= max_y
+                    or coordinates[1] <= min_y
+            ):
+                coordinates = generate_coordinates(self.screen)
 
-            self.add_agent(Cockroach(pos=np.array(coordinates), v=None, state="wandering", index=index))
+            self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index))

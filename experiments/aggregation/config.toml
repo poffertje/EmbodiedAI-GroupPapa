@@ -9,7 +9,7 @@ height = 1000
 width  = 1000
 
 [cockroach]
-joining_probability = 0.5
+radius_view = 70
 
 [agent]
 height    = 8
