@@ -55,3 +55,9 @@ class Cockroach(Agent):
                     self.state == "wandering"
 
     def update_actions(self):
+
+        # avoid any obstacles in the environment
+        for obstacle in self.flock.objects.obstacles:
+            collide = pygame.sprite.collide_mask(self, obstacle)
+            if bool(collide):
+                self.avoid_obstacle()
