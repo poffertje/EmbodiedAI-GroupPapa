@@ -39,7 +39,7 @@ class Cockroach(Agent):
             if np.random.choice([True, False], p=[probability, 1 - probability]):
                 self.join()
         elif self.state == "joining":
-            if time.time() - self.time == 2.00:
+            if time.time() - self.time > 0.50:
                 self.still()
             else:
                 pass
@@ -48,10 +48,11 @@ class Cockroach(Agent):
             if self.counter % 5 == 0:
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                 probability = (config["base"]["n_agents"]-nr_neighbours)/config["base"]["n_agents"]
+                print(probability)
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.leave()
         elif self.state == "leaving":
-            if time.time()-self.time == 6.00:
+            if time.time()-self.time > 5.0:
                 self.state = 'wandering'
 
     def update_actions(self):
@@ -63,7 +64,7 @@ class Cockroach(Agent):
 
         # if the cockroach is inside an aggregation site, the site_behaviour function should determine what should be
         # done
-        if self.pos[0] >= self.min_bound and self.pos[0] <= self.max_bound and self.pos[1] >= self.min_bound and self.pos[1] <= self.max_bound:
+        if self.pos[0] > self.min_bound and self.pos[0] < self.max_bound and self.pos[1] > self.min_bound and self.pos[1] < self.max_bound:
             self.site_behavior()
 
         # if the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
@@ -77,12 +78,11 @@ class Cockroach(Agent):
     def join(self):
         self.change_state("joining")
         self.time = time.time()
-        self.v = [0,0]
         # self.wander()
 
     def still(self):
         self.change_state("still")
-        self.v(0)
+        self.v = [0,0]
 
     def ___(self):
         self.change_state("wandering")
@@ -91,4 +91,4 @@ class Cockroach(Agent):
     def leave(self):
         self.change_state("leaving")
         self.time = time.time()
-        self.set_velocity()
+        self.v = self.set_velocity()
