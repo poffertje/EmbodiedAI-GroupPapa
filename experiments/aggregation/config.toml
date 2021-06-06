@@ -9,7 +9,7 @@ height = 1000
 width  = 1000
 
 [cockroach]
-radius_view = 70
+radius_view = 30
 
 [agent]
 height    = 8
