@@ -1,6 +1,6 @@
 [base]
 swarm_type       = 'aggregation'
-n_agents = 20
+n_agents = 100
 object_location  = [500, 500]
 
 [screen]
@@ -9,7 +9,7 @@ height = 1000
 width  = 1000
 
 [cockroach]
-radius_view = 30
+radius_view = 70
 
 [agent]
 height    = 8

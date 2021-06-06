@@ -143,7 +143,7 @@ class Simulation:
             while self.running:
                 init = time.time()
                 self.simulate()
-                print(time.time() - init)
+                # print(time.time() - init)
 
             self.plot_simulation()
         else:

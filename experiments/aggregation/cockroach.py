@@ -31,33 +31,37 @@ class Cockroach(Agent):
         self.state = new_state
 
     def site_behavior(self):
-        if self.pos[0] in range(area(500,300)) and self.pos[1] in range(area(500,300)):
+        min_bound = int(area(500,200)[0])
+        max_bound = int(area(500,200)[1])
+        if self.pos[0] and self.pos[1] in range(min_bound,max_bound):
             if self.state == "wandering":
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                 probability = nr_neighbours/config["base"]["n_agents"]
+                print(probability)
                 if np.random.choice([True,False],p=[probability,1-probability]):
                     self.change_state("joining")
                     self.time = time.time()
             elif self.state == "joining":
                 if time.time()-self.time == 2.00:
-                    self.state = "still"
+                    self.change_state("still")
             elif self.state == "still":
                 self.counter+=1
                 if self.counter % 5 == 0:
                     nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                     probability =  (config["base"]["n_agents"]-nr_neighbours)/config["base"]["n_agents"]
                     if np.random.choice([True, False], p=[probability, 1 - probability]):
-                        self.state = "leaving"
+                        self.change_state("leaving")
                         self.time = time.time()
-        elif not(self.pos[0] in range(area(500,300)) and self.pos[1] in range(area(500,300))):
+        elif not(self.pos[0] and self.pos[1] in range(min_bound,max_bound)):
             if self.state == "leaving":
                 if time.time()-self.time == 6.00:
-                    self.state == "wandering"
+                    self.change_state("wandering")
 
     def update_actions(self):
-
         # avoid any obstacles in the environment
         for obstacle in self.flock.objects.obstacles:
             collide = pygame.sprite.collide_mask(self, obstacle)
             if bool(collide):
                 self.avoid_obstacle()
+
+        self.site_behavior()
