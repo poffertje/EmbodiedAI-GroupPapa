@@ -14,7 +14,7 @@ class Aggregations(Swarm):
         "location of the obstacle and the aggregation site"
         loc = config["base"]["object_location"]
 
-        obstacle_scale = [500, 500]
+        obstacle_scale = [400, 400]
         obstacle_filename = ( "experiments/flocking/images/redd.png" )
 
         "Add containing object (outer edge)"
@@ -29,8 +29,8 @@ class Aggregations(Swarm):
         self.objects.add_object(
             file=aggregation_filename, pos=loc, scale=aggregation_scale, obj_type="site"
         )
-        min_x, max_x = area(loc[0], loc[0])
-        min_y, max_y = area(loc[1], loc[1])
+        min_x, max_x = area(loc[0], obstacle_scale[0])
+        min_y, max_y = area(loc[1], obstacle_scale[1])
 
         # add agents to the environment
         for index, agent in enumerate(range(num_agents)):
