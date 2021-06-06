@@ -45,7 +45,7 @@ class Cockroach(Agent):
                 pass
         elif self.state == "still":
             self.counter += 1
-            if self.counter % 5 == 0:
+            if self.counter % 100 == 0:
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                 probability = (config["base"]["n_agents"]-nr_neighbours)/config["base"]["n_agents"]
                 print(probability)
