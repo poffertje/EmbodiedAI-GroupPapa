@@ -14,7 +14,7 @@ class Aggregations(Swarm):
         "location of the obstacle and the aggregation site"
         loc = config["base"]["object_location"]
 
-        obstacle_scale = [1000, 1000]
+        obstacle_scale = [900, 900]
         obstacle_filename = ( "experiments/flocking/images/redd.png" )
 
         "Add containing object (outer edge)"
@@ -22,7 +22,7 @@ class Aggregations(Swarm):
             file=obstacle_filename, pos=loc, scale=obstacle_scale, obj_type="obstacle"
         )
 
-        aggregation_scale = [200,200]
+        aggregation_scale = [150,150]
         aggregation_filename = ("experiments/aggregation/images/greyc1.png")
 
         "Add aggregation site"
