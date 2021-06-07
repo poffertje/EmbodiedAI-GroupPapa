@@ -1,7 +1,9 @@
 [base]
 swarm_type       = 'aggregation'
-n_agents = 40
+n_agents = 100
 object_location  = [500, 500]
+#site1_location = [width/3.5,height*0.5]
+#site2_location = [width-(width/3.5),height*0.5]
 
 [screen]
 frames = inf

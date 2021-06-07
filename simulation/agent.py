@@ -96,7 +96,6 @@ class Agent(pygame.sprite.Sprite):  # super class
         self.wandering_angle = randrange(
             -np.pi, np.pi
         )  # set a random wandering angle
-
         self.steering = np.zeros(2)
         self.pos = np.zeros(2) if pos is None else pos
         self.v: np.ndarray = self.set_velocity() if v is None else v

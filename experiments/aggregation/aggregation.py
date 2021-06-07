@@ -1,6 +1,6 @@
 from experiments.aggregation.cockroach import Cockroach
 from experiments.aggregation.config import config
-from experiments.aggregation.scenarios import experiment0
+from experiments.aggregation.scenarios import experiment0, experiment1, experiment2
 from simulation.utils import *
 from simulation.swarm import Swarm
 
@@ -22,12 +22,23 @@ class Aggregations(Swarm):
         )
 
         aggregation_loc, aggregation_scale, _ = experiment0(self.screen)
+        # aggregation_loc1, aggregation_loc2, aggregation_scale1, aggregation_scale2, big = experiment1(self.screen)
+        # aggregation_loc1, aggregation_loc2, aggregation_scale1, aggregation_scale2, big = experiment2(self.screen)
         aggregation_filename = "experiments/aggregation/images/greyc1.png"
 
         "Add aggregation site"
         self.objects.add_object(
             file=aggregation_filename, pos=aggregation_loc, scale=aggregation_scale, obj_type="site"
         )
+
+        # self.objects.add_object(
+        #     file=aggregation_filename if not(big) else "experiments/aggregation/images/greyc2.png", pos=aggregation_loc1, scale=aggregation_scale1, obj_type="site"
+        # )
+        #
+        # self.objects.add_object(
+        #     file=aggregation_filename, pos=aggregation_loc2, scale=aggregation_scale2, obj_type="site"
+        # )
+
         min_x, max_x = area(obstacle_loc[0], obstacle_scale[0])
         min_y, max_y = area(obstacle_loc[1], obstacle_scale[1])
 

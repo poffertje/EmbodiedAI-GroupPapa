@@ -7,3 +7,9 @@ html/
 venv/
 pyenv/
 
+
+experiments/flocking/__pycache__/
+
+experiments/aggregation/__pycache__/
+
+experiments/covid/__pycache__/

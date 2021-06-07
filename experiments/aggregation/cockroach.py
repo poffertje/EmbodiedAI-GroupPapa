@@ -27,13 +27,25 @@ class Cockroach(Agent):
         self.counter = 0
         self.min_bound = int(area(config["base"]["object_location"][0],110)[0])+5
         self.max_bound = int(area(config["base"]["object_location"][1],110)[1])-5
+        # self.min_bound1 = int(area(config["base"]["object_location"][0],110)[0])+5
+        # self.max_bound1 = int(area(config["base"]["object_location"][1],110)[1])-5
+        # self.min_bound2 = int(area(config["base"]["object_location"][0],90)[0])+5
+        # self.max_bound2 = int(area(config["base"]["object_location"][1],90)[1])-5
 
     def change_state(self, new_state):
         self.state = new_state
 
     def site_behavior(self):
         if self.state == "wandering":
-            nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
+            neighbours = self.flock.find_neighbors(self, config["cockroach"]["radius_view"])
+            still_neighbours = []
+            for neighbour in neighbours:
+                if neighbour.state == "still" or neighbour.state == "joining":
+                    still_neighbours.append(neighbour)
+            if len(still_neighbours) > 5:
+                nr_neighbours = len(still_neighbours)
+            else:
+                nr_neighbours = len(neighbours)
             probability = float(0 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
             if np.random.choice([True, False], p=[probability, 1 - probability]):
                 self.join()
@@ -44,11 +56,12 @@ class Cockroach(Agent):
                 pass
         elif self.state == "still":
             self.counter += 1
-            if self.counter % 100 == 0:
+            if self.counter % 200 == 0:
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-                probability = float(0.75 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
-                if np.random.choice([True, False], p=[1-probability, probability]):
-                    self.leave()
+                if nr_neighbours > 6:
+                    probability = 1/(nr_neighbours*2)
+                    if np.random.choice([True, False], p=[probability, 1-probability]):
+                        self.leave()
         elif self.state == "leaving":
             if time.time()-self.time > 5.0:
                 self.state = 'wandering'
@@ -62,12 +75,20 @@ class Cockroach(Agent):
 
         # if the cockroach is inside an aggregation site, the site_behaviour function should determine what should be
         # done
+        # if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
+        #     self.site_behavior()
+
         if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
+            self.site_behavior()
+
+        elif isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
             self.site_behavior()
 
         # if the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
         # is outside the site but in a different state, make sure to have it wander)
         else:
+            if np.random.choice([True, False], p=[0.1,0.9]):
+                self.v += [randrange(-5,5),randrange(-5,5)]
             if self.state != "wandering":
                 self.change_state("wandering")
             else:
