@@ -71,7 +71,7 @@ class Cockroach(Agent):
         elif self.state == "leaving":
             if time.time()-self.time > 5.0:
                 self.state = 'wandering'
-
+    #update action
     def update_actions(self):
         # avoid any obstacles in the environment
         for obstacle in self.flock.objects.obstacles:
