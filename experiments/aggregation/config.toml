@@ -16,5 +16,5 @@ height    = 8
 width     = 10
 dt        = 0.2
 mass      = 20
-max_speed = 15
+max_speed = 15.0
 min_speed = 10.0

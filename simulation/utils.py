@@ -176,3 +176,21 @@ def relative(u: Union[np.ndarray, List[Union[float, int]]], v: Union[np.ndarray,
 
     """
     return [int(u[i]) - int(v[i]) for i in range(len(u))]
+
+def isInside(circle_x, circle_y, rad, x, y):
+    """
+    Checks whether a point falls inside the radius of a given circle
+
+    Args:
+        circle_x (int):
+        circle_y (int):
+        rad (int):
+        x (int):
+        y (int):
+
+    """
+    if ((x - circle_x) * (x - circle_x) +
+            (y - circle_y) * (y - circle_y) < rad * rad):
+        return True;
+    else:
+        return False;

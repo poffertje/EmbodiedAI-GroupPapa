@@ -25,10 +25,10 @@ class Cockroach(Agent):
         self.flock = flock
         self.time = 0
         self.counter = 0
-        self.min_bound = int(area(500,110)[0])
-        self.max_bound = int(area(500,110)[1])
+        self.min_bound = int(area(config["base"]["object_location"][0],110)[0])+5
+        self.max_bound = int(area(config["base"]["object_location"][1],110)[1])-5
 
-    def change_state(self,new_state):
+    def change_state(self, new_state):
         self.state = new_state
 
     def site_behavior(self):
@@ -38,7 +38,7 @@ class Cockroach(Agent):
             if np.random.choice([True, False], p=[probability, 1 - probability]):
                 self.join()
         elif self.state == "joining":
-            if time.time() - self.time > 0.50:
+            if time.time() - self.time > 0.25:
                 self.still()
             else:
                 pass
@@ -46,8 +46,8 @@ class Cockroach(Agent):
             self.counter += 1
             if self.counter % 100 == 0:
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-                probability = (config["base"]["n_agents"]-nr_neighbours)/config["base"]["n_agents"]
-                if np.random.choice([True, False], p=[probability, 1 - probability]):
+                probability = float(0.75 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
+                if np.random.choice([True, False], p=[1-probability, probability]):
                     self.leave()
         elif self.state == "leaving":
             if time.time()-self.time > 5.0:
@@ -62,7 +62,7 @@ class Cockroach(Agent):
 
         # if the cockroach is inside an aggregation site, the site_behaviour function should determine what should be
         # done
-        if self.pos[0] > self.min_bound and self.pos[0] < self.max_bound and self.pos[1] > self.min_bound and self.pos[1] < self.max_bound:
+        if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
             self.site_behavior()
 
         # if the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach

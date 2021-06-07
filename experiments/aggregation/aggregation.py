@@ -1,5 +1,6 @@
 from experiments.aggregation.cockroach import Cockroach
 from experiments.aggregation.config import config
+from experiments.aggregation.scenarios import experiment0
 from simulation.utils import *
 from simulation.swarm import Swarm
 
@@ -11,26 +12,24 @@ class Aggregations(Swarm):
 
     def initialize(self, num_agents: int) -> None:
 
-        "location of the obstacle and the aggregation site"
-        loc = config["base"]["object_location"]
+        obstacle_loc = config["base"]["object_location"]
+        obstacle_scale = [700, 700]
+        obstacle_filename = "experiments/flocking/images/redd.png"
 
-        obstacle_scale = [900, 900]
-        obstacle_filename = ( "experiments/flocking/images/redd.png" )
-
-        "Add containing object (outer edge)"
+        "Add containing object (outer circle)"
         self.objects.add_object(
-            file=obstacle_filename, pos=loc, scale=obstacle_scale, obj_type="obstacle"
+            file=obstacle_filename, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
         )
 
-        aggregation_scale = [150,150]
-        aggregation_filename = ("experiments/aggregation/images/greyc1.png")
+        aggregation_loc, aggregation_scale, _ = experiment0(self.screen)
+        aggregation_filename = "experiments/aggregation/images/greyc1.png"
 
         "Add aggregation site"
         self.objects.add_object(
-            file=aggregation_filename, pos=loc, scale=aggregation_scale, obj_type="site"
+            file=aggregation_filename, pos=aggregation_loc, scale=aggregation_scale, obj_type="site"
         )
-        min_x, max_x = area(loc[0], obstacle_scale[0])
-        min_y, max_y = area(loc[1], obstacle_scale[1])
+        min_x, max_x = area(obstacle_loc[0], obstacle_scale[0])
+        min_y, max_y = area(obstacle_loc[1], obstacle_scale[1])
 
         # add agents to the environment
         for index, agent in enumerate(range(num_agents)):
