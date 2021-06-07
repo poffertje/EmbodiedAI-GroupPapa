@@ -31,6 +31,10 @@ class Cockroach(Agent):
         # self.max_bound1 = int(area(config["base"]["object_location"][1],110)[1])-5
         # self.min_bound2 = int(area(config["base"]["object_location"][0],90)[0])+5
         # self.max_bound2 = int(area(config["base"]["object_location"][1],90)[1])-5
+        self.T0 = 1
+        self.t = self.T0
+        self.C = 0.1
+        self.T = self.T0
 
     def change_state(self, new_state):
         self.state = new_state
@@ -58,10 +62,12 @@ class Cockroach(Agent):
             self.counter += 1
             if self.counter % 200 == 0:
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-                if nr_neighbours > 6:
-                    probability = 1/(nr_neighbours*2)
-                    if np.random.choice([True, False], p=[probability, 1-probability]):
-                        self.leave()
+                #if nr_neighbours > 6:
+                probability = (1/nr_neighbours)**(1/self.T)
+                print(probability)
+                    #probability = 1/(nr_neighbours*2)
+                if np.random.choice([True, False], p=[probability, 1-probability]):
+                    self.leave()
         elif self.state == "leaving":
             if time.time()-self.time > 5.0:
                 self.state = 'wandering'
@@ -72,7 +78,8 @@ class Cockroach(Agent):
             collide = pygame.sprite.collide_mask(self, obstacle)
             if bool(collide):
                 self.avoid_obstacle()
-
+        self.t += 1
+        self.T = np.power((self.C * np.log(self.t + self.T0)), -1)
         # if the cockroach is inside an aggregation site, the site_behaviour function should determine what should be
         # done
         # if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
