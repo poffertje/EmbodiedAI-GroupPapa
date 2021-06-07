@@ -3,6 +3,7 @@ import time
 from experiments.aggregation.config import config
 from simulation.agent import Agent
 from simulation.utils import *
+import matplotlib.pyplot as plt
 
 class Cockroach(Agent):
     """ """
@@ -80,7 +81,8 @@ class Cockroach(Agent):
         for agent in self.flock.agents:
             if agent.state == "still":
                 count_on_site_agents += 1
-                print(count_on_site_agents)
+        print(count_on_site_agents)
+
 
         # avoid any obstacles in the environment
         for obstacle in self.flock.objects.obstacles:
