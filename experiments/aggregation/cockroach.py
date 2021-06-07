@@ -4,7 +4,6 @@ from experiments.aggregation.config import config
 from simulation.agent import Agent
 from simulation.utils import *
 
-
 class Cockroach(Agent):
     """ """
     def __init__(
@@ -26,8 +25,8 @@ class Cockroach(Agent):
         self.flock = flock
         self.time = 0
         self.counter = 0
-        self.min_bound = int(area(500,150)[0])
-        self.max_bound = int(area(500,150)[1])
+        self.min_bound = int(area(500,110)[0])
+        self.max_bound = int(area(500,110)[1])
 
     def change_state(self,new_state):
         self.state = new_state
@@ -35,7 +34,7 @@ class Cockroach(Agent):
     def site_behavior(self):
         if self.state == "wandering":
             nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-            probability = nr_neighbours / config["base"]["n_agents"]
+            probability = float(0 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
             if np.random.choice([True, False], p=[probability, 1 - probability]):
                 self.join()
         elif self.state == "joining":
@@ -48,7 +47,6 @@ class Cockroach(Agent):
             if self.counter % 100 == 0:
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                 probability = (config["base"]["n_agents"]-nr_neighbours)/config["base"]["n_agents"]
-                print(probability)
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.leave()
         elif self.state == "leaving":
@@ -78,7 +76,6 @@ class Cockroach(Agent):
     def join(self):
         self.change_state("joining")
         self.time = time.time()
-        # self.wander()
 
     def still(self):
         self.change_state("still")
