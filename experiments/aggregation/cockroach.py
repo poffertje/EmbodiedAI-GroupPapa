@@ -64,7 +64,7 @@ class Cockroach(Agent):
                 nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                 #if nr_neighbours > 6:
                 probability = (1/nr_neighbours)**(1/self.T)
-                print(probability)
+                # print(probability)
                     #probability = 1/(nr_neighbours*2)
                 if np.random.choice([True, False], p=[probability, 1-probability]):
                     self.leave()
@@ -73,6 +73,15 @@ class Cockroach(Agent):
                 self.state = 'wandering'
     #update action
     def update_actions(self):
+        # This is used to calculate the agents currently on site
+        count_on_site_agents = 0
+
+        # Access the list of all agents and add one to the counter for each instance of cockroach with state "still"
+        for agent in self.flock.agents:
+            if agent.state == "still":
+                count_on_site_agents += 1
+                print(count_on_site_agents)
+
         # avoid any obstacles in the environment
         for obstacle in self.flock.objects.obstacles:
             collide = pygame.sprite.collide_mask(self, obstacle)
