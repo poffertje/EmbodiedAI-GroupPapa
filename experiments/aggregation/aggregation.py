@@ -21,15 +21,12 @@ class Aggregations(Swarm):
             file=obstacle_filename, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
         )
 
-        # aggregation_loc, aggregation_scale, _ = experiment0(self.screen)
-        # aggregation_loc1, aggregation_loc2, aggregation_scale1, aggregation_scale2, big = experiment1(self.screen)
-        aggregation_loc1, aggregation_loc2, aggregation_scale1, aggregation_scale2, big = experiment2(self.screen)
+        if config["base"]["experiment"] == 'experiment 1':
+            aggregation_loc1, aggregation_loc2, aggregation_scale1, aggregation_scale2, big = experiment1(self.screen)
+        else:
+            aggregation_loc1, aggregation_loc2, aggregation_scale1, aggregation_scale2, big = experiment2(self.screen)
         aggregation_filename = "experiments/aggregation/images/greyc1.png"
 
-        # "Add aggregation site"
-        # self.objects.add_object(
-        #     file=aggregation_filename, pos=aggregation_loc, scale=aggregation_scale, obj_type="site"
-        # )
 
         self.objects.add_object(
             file=aggregation_filename if not(big) else "experiments/aggregation/images/greyc2.png", pos=aggregation_loc1, scale=aggregation_scale1, obj_type="site"
@@ -54,11 +51,9 @@ class Aggregations(Swarm):
             ):
                 coordinates = generate_coordinates(self.screen)
 
-            # self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index))
-
-            if int(index) % 10 == 0:
+            if int(index) % 5 == 0:
                 self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index,
-                                         leader=True, image=None, color=(255, 0, 0)))
+                                         leader=True, image=None, color=(0, 0, 255)))
             else:
                 self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index,
-                                     leader=False, image="experiments/aggregation/images/ant.png", color=(0, 0, 255)))
+                                     leader=False, image="experiments/aggregation/images/ant.png"))
