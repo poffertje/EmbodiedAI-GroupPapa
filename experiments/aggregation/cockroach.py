@@ -36,79 +36,62 @@ class Cockroach(Agent):
         self.max_bound1 = int(area(config["base"]["site1_location"][0],90)[1])-5
         self.min_bound2 = int(area(config["base"]["site2_location"][0],90)[0])+5
         self.max_bound2 = int(area(config["base"]["site2_location"][0],90)[1])-5
+
         self.T0 = 1
-        self.t = self.T0
-        self.C = 0.1
         self.T = self.T0
+        self.t = 0
+        self.C = 0.1
 
     def change_state(self, new_state):
         self.state = new_state
 
-    def site_behavior(self,site_name):
+    def site_behavior(self, site_name):
+
+        # Wandering state
         if self.state == "wandering":
-            neighbours = self.flock.find_neighbors(self, config["cockroach"]["radius_view"])
-            still_neighbours = []
-            for neighbour in neighbours:
-                if neighbour.state == "still" or neighbour.state == "joining":
-                    still_neighbours.append(neighbour)
-            if len(still_neighbours) > 5:
-                nr_neighbours = len(still_neighbours)
-            else:
-                nr_neighbours = len(neighbours)
+           # Get number of still neighbours
+            nr_neighbours = self.count_still_neighbours()
             probability = float(0 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
             if np.random.choice([True, False], p=[probability, 1 - probability]):
                 self.join()
+
+        # Joining state
         elif self.state == "joining":
+            # Update the attribute to evaluate the number of agents
             self.site_name = site_name
             if time.time() - self.time > 0.25:
                 self.still()
             else:
                 pass
+
+        # Still state
         elif self.state == "still":
             self.counter += 1
+            # Every 200 iterations consider leaving
             if self.counter % 200 == 0:
-                nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-                #if nr_neighbours > 6:
-                probability = (1/nr_neighbours)**(1/self.T)
-                # print(probability)
-                    #probability = 1/(nr_neighbours*2)
-                if np.random.choice([True, False], p=[probability, 1-probability]):
+                nr_neighbours = self.count_still_neighbours()
+                a_probability = (1/nr_neighbours) ** (1/self.T)
+                if np.random.choice([True, False], p=[a_probability, 1 - a_probability]):
                     self.leave()
+
+        # Leaving state
         elif self.state == "leaving":
-            if time.time()-self.time > 5.0:
+            if time.time() - self.time > 5.0:
                 self.state = 'wandering'
-    #update action
+
+    # Update the state of the roach
     def update_actions(self):
         # Call to evaluate the agents on site
         self.evaluate()
-
-        # avoid any obstacles in the environment
-        for obstacle in self.flock.objects.obstacles:
-            collide = pygame.sprite.collide_mask(self, obstacle)
-            if bool(collide):
-                # If boid gets stuck because when avoiding the obstacle ended up inside of the object,
-                # resets the position to the previous one and do a 180 degree turn back
-                if not self.avoided_obstacles:
-                    self.prev_pos = self.pos.copy()
-                    self.prev_v = self.v.copy()
-
-                else:
-                    self.pos = self.prev_pos.copy()
-                    self.v = self.prev_v.copy()
-
-                self.avoided_obstacles = True
-                self.avoid_obstacle()
-                return
-
-        self.prev_v = None
-        self.prev_pos = None
-
-        self.avoided_obstacles = False
+        # Avoid obstacles
+        self.check_for_obstacles()
 
         self.t += 1
-        self.T = np.power((self.C * np.log(self.t + self.T0)), -1)
-        # if the cockroach is inside an aggregation site, the site_behaviour function should determine what should be
-        # done
+        self.T = np.power((self.C * np.log(self.t + self.T)), -1)
+
+        # If a cockroach is inside an aggregation site, the site_behaviour function should determine
+        # what the next action is going to be
+
         # if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
         #     self.site_behavior()
 
@@ -119,10 +102,11 @@ class Cockroach(Agent):
             self.site_behavior("site2")
 
 
-        # if the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
+        # If the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
         # is outside the site but in a different state, make sure to have it wander)
         else:
             if np.random.choice([True, False], p=[0.1,0.9]):
+                # Wiggle motion
                 self.v += [randrange(-5,5),randrange(-5,5)]
             if self.state != "wandering":
                 self.change_state("wandering")
@@ -153,6 +137,7 @@ class Cockroach(Agent):
 
         # Access the list of all agents and add one to the counter for each instance of cockroach with state "still"
         for agent in self.flock.agents:
+            # Check whether agent is in "still" state
             if agent.state == "still":
                 if agent.site_name == "site1":
                     count_on_site_agents_1 += 1
@@ -160,5 +145,46 @@ class Cockroach(Agent):
                     count_on_site_agents_2 += 1
 
         # Comment/uncomment as needed
-        print("Number of roaches on site 1: %s" % count_on_site_agents_1)
-        print("Number of roaches on site 2: %d" % count_on_site_agents_2)
+        # print("Number of roaches on site 1: %s" % count_on_site_agents_1)
+        # print("Number of roaches on site 2: %d" % count_on_site_agents_2)
+
+    def count_still_neighbours(self):
+        # Find all current neighbours
+        neighbours = self.flock.find_neighbors(self, config["cockroach"]["radius_view"])
+
+        still_neighbours = []
+        # For each neighbour in the list check which ones are still
+        for neighbour in neighbours:
+            if neighbour.state == "still" or neighbour.state == "joining":
+                still_neighbours.append(neighbour)
+
+        if len(still_neighbours) > 5:
+            nr_neighbours = len(still_neighbours)
+        else:
+            nr_neighbours = len(neighbours)
+
+        return nr_neighbours
+
+    def check_for_obstacles(self):
+        # Avoid any obstacles in the environment
+        for obstacle in self.flock.objects.obstacles:
+            collide = pygame.sprite.collide_mask(self, obstacle)
+            if bool(collide):
+                # If a roach gets stuck because when avoiding the obstacle ended up inside of the object,
+                # reset the position to the previous one and do a 180 degree turn
+                if not self.avoided_obstacles:
+                    self.prev_pos = self.pos.copy()
+                    self.prev_v = self.v.copy()
+
+                else:
+                    self.pos = self.prev_pos.copy()
+                    self.v = self.prev_v.copy()
+
+                self.avoided_obstacles = True
+                self.avoid_obstacle()
+                return
+
+        self.prev_v = None
+        self.prev_pos = None
+        self.avoided_obstacles = False
+
