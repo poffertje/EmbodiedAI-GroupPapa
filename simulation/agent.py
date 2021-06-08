@@ -70,7 +70,6 @@ class Agent(pygame.sprite.Sprite):  # super class
             dT: Defaults to None
             index (int):Defaults to None
         """
-        super(Agent, self).__init__()
         self.angle = None
         self.index = index
         self.image_file = image
@@ -222,6 +221,7 @@ class Agent(pygame.sprite.Sprite):  # super class
 
         """
         screen.blit(self.image, self.rect)
+        print(self.image)
 
     def reset_frame(self) -> None:
         """Reset the steering value for the next computations"""

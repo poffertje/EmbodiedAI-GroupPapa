@@ -25,6 +25,7 @@ class Cockroach(Agent):
             index=index,
             color=color
         )
+
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
@@ -44,7 +45,7 @@ class Cockroach(Agent):
         self.T0 = 1
         self.T = self.T0
         self.t = 0
-        self.C = 0.1
+        self.C = 0.2
 
         self.leader = leader
         self.timer = time.time()
@@ -57,55 +58,40 @@ class Cockroach(Agent):
 
     def site_behavior(self, site_name, leader):
         if leader:
-            if time.time() - self.timer < config["cockroach"]["explore_timer"]:
-                # Wandering state
-                if self.state == "wandering":
-                    self.join()
+            # Wandering state
+            if self.state == "wandering":
+                self.join()
 
-                # Joining state
-                elif self.state == "joining":
-                    # Update the attribute to evaluate the number of agents
-                    self.site_name = site_name
-                    current_site_pos, current_site_size, radius = site_info(site_name)
-                    if current_site_size > self.largest_site_size:
-                        self.largest_site_size = current_site_size
-                        self.largest_site_pos = current_site_pos
-                        self.largest_radius = radius
+            # Joining state
+            elif self.state == "joining":
+                # Update the attribute to evaluate the number of agents
+                self.site_name = site_name
+                current_site_pos, current_site_size, radius = site_info(site_name)
+                if current_site_size > self.largest_site_size:
+                    self.largest_site_size = current_site_size
+                    self.largest_site_pos = current_site_pos
+                    self.largest_radius = radius
 
-                    elif time.time() - self.time > 0.25:
-                        self.still()
-                    else:
-                        pass
-
-                # Still state
-                elif self.state == "still":
-                    self.leave()
-
-                # Leaving state
-                elif self.state == "leaving":
-                    if time.time() - self.time > 5.0:
-                        self.state = 'wandering'
-
-            elif time.time()-self.timer >= config["cockroach"]["explore_timer"] and self.state != "still":
-                self.counter+=1
-                if self.counter == 1:
-                    print(self.largest_site_pos)
-                if self.largest_site_size != 0:
-                    self.v = [self.largest_site_pos[0]-self.pos[0],self.largest_site_pos[1]-self.pos[1]]
-                    self.state = "joining"
-                    if isInside(self.largest_site_pos[0],self.largest_site_pos[1], self.largest_radius, self.pos[0],self.pos[1]):
-                        if time.time() - self.time > 0.25:
-                            self.still()
+                elif time.time() - self.time > 0.25:
+                    self.still()
                 else:
-                    self.state = "wandering"
+                    pass
 
-        elif not (leader):
+            # Still state
+            elif self.state == "still":
+                self.leave()
+
+            # Leaving state
+            elif self.state == "leaving":
+                if time.time() - self.time > 5.0:
+                    self.state = 'wandering'
+
+        elif not(leader):
             # Wandering state
             if self.state == "wandering":
                 # Get number of still neighbours
                 nr_neighbours = self.count_still_neighbours()
                 probability = float(0 if nr_neighbours == 0 else 1 - (1 / nr_neighbours))
-                print(probability)
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.join()
 
@@ -145,26 +131,41 @@ class Cockroach(Agent):
 
         # If a cockroach is inside an aggregation site, the site_behaviour function should determine
         # what the next action is going to be
-        if isInside(config["base"]["site1_location"][0], config["base"]["site1_location"][1], self.radius1, self.pos[0],
-                    self.pos[1]):
-            self.site_behavior("site1", self.leader)
+        if (time.time() - self.timer < config["cockroach"]["explore_timer"] and self.leader) or not(self.leader):
+            if isInside(config["base"]["site1_location"][0], config["base"]["site1_location"][1], self.radius1, self.pos[0],
+                        self.pos[1]):
+                self.site_behavior("site1", self.leader)
 
-        elif isInside(config["base"]["site2_location"][0], config["base"]["site2_location"][1], self.radius2,self.pos[0],
-                      self.pos[1]):
-            self.site_behavior("site2", self.leader)
-
-
-        # If the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
-        # is outside the site but in a different state, make sure to have it wander)
-        else:
-            if np.random.choice([True, False], p=[0.1, 0.9]):
-                # Wiggle motion
-                if (self.leader and time.time()-self.timer < config["cockroach"]["explore_timer"]) or not(self.leader):
-                    self.v += [randrange(-5, 5), randrange(-5, 5)]
-            if self.state != "wandering":
-                self.change_state("wandering")
+            elif isInside(config["base"]["site2_location"][0], config["base"]["site2_location"][1], self.radius2,self.pos[0],
+                          self.pos[1]):
+                self.site_behavior("site2", self.leader)
             else:
-                pass
+                # If the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
+                # is outside the site but in a different state, make sure to have it wander)
+                if np.random.choice([True, False], p=[0.1, 0.9]):
+                    # Wiggle motion
+                    if (self.leader and time.time() - self.timer < config["cockroach"]["explore_timer"]) or not (
+                    self.leader):
+                        self.v += [randrange(-5, 5), randrange(-5, 5)]
+                if self.state != "wandering":
+                    self.change_state("wandering")
+                else:
+                    pass
+
+        elif time.time() - self.timer >= config["cockroach"]["explore_timer"] and self.leader and self.state != "still":
+            self.counter += 1
+            if self.counter == 1:
+                self.state = "wandering"
+                if self.largest_site_size != 0:
+                    self.v = [self.largest_site_pos[0] - self.pos[0], self.largest_site_pos[1] - self.pos[1]]
+            elif self.largest_site_pos != [0, 0]:
+                if isInside(self.largest_site_pos[0], self.largest_site_pos[1], self.largest_radius, self.pos[0],
+                            self.pos[1]):
+                    if self.state != "joining":
+                        self.join()
+                    elif self.state == "joining":
+                        if time.time() - self.time > randrange(1, 3):
+                            self.still()
 
     def join(self):
         self.change_state("joining")
@@ -209,8 +210,7 @@ class Cockroach(Agent):
         # For each neighbour in the list check which ones are still
         for neighbour in neighbours:
             if neighbour.state == "still" or neighbour.state == "joining":
-                if neighbour.leader:
-                    still_neighbours.append(neighbour)
+                still_neighbours.append(neighbour)
 
         nr_neighbours = len(still_neighbours)
 
