@@ -79,19 +79,8 @@ class Cockroach(Agent):
                 self.state = 'wandering'
     #update action
     def update_actions(self):
-        # This is used to calculate the agents currently on site
-        count_on_site_agents_1 = 0
-        count_on_site_agents_2 = 0
-        # Access the list of all agents and add one to the counter for each instance of cockroach with state "still"
-        for agent in self.flock.agents:
-            if agent.state == "still":
-                if agent.site_name == "site1":
-                    count_on_site_agents_1 += 1
-                elif agent.site_name == "site2":
-                    count_on_site_agents_2 += 1
-        #
-        # print("Number of roaches in site 1: %s" % count_on_site_agents_1)
-        # print("Number of roaches in site 2: %d" % count_on_site_agents_2)
+        # Call to evaluate the agents on site
+        self.evaluate()
 
         # avoid any obstacles in the environment
         for obstacle in self.flock.objects.obstacles:
@@ -156,3 +145,20 @@ class Cockroach(Agent):
         self.change_state("leaving")
         self.time = time.time()
         self.v = self.set_velocity()
+
+    def evaluate(self):
+        # This is used to calculate the agents currently on site
+        count_on_site_agents_1 = 0
+        count_on_site_agents_2 = 0
+
+        # Access the list of all agents and add one to the counter for each instance of cockroach with state "still"
+        for agent in self.flock.agents:
+            if agent.state == "still":
+                if agent.site_name == "site1":
+                    count_on_site_agents_1 += 1
+                elif agent.site_name == "site2":
+                    count_on_site_agents_2 += 1
+
+        # Comment/uncomment as needed
+        print("Number of roaches on site 1: %s" % count_on_site_agents_1)
+        print("Number of roaches on site 2: %d" % count_on_site_agents_2)
