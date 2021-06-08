@@ -17,7 +17,7 @@ def experiment0(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]: 
 
     return area_loc1, scale1, big
 
-def experiment1(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]:  # Two assymetrical aggregation site
+def experiment1(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]:  # Two asymmetrical aggregation sites
     """
 
     :param screensize:
@@ -33,9 +33,9 @@ def experiment1(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]: 
 
     big = True
 
-    return area_loc1, area_loc2, scale1, scale2,big
+    return area_loc1, area_loc2, scale1, scale2, big
 
-def experiment2(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]:  # Two assymetrical aggregation site
+def experiment2(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]:  # Two symmetrical aggregation sites
     """
 
     :param screensize:
@@ -51,4 +51,4 @@ def experiment2(screensize: Mapping[int, Any]) -> Tuple[list, List[int], bool]: 
 
     big = False
 
-    return area_loc1, area_loc2, scale1, scale2,big
+    return area_loc1, area_loc2, scale1, scale2, big

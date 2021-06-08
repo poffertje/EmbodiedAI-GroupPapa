@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 class Cockroach(Agent):
     """ """
     def __init__(
-            self, pos, v, flock, state, index: int, image: str = "experiments/aggregation/images/ant.png"
+            # self, pos, v, flock, state, index: int, image: str = "experiments/aggregation/images/ant.png"
+            self, pos, v, flock, state, index: int, leader, image, color
     ) -> None:
         super(Cockroach, self).__init__(
             pos,
@@ -20,13 +21,16 @@ class Cockroach(Agent):
             width=config["agent"]["width"],
             height=config["agent"]["height"],
             dT=config["agent"]["dt"],
-            index=index
+            index=index,
+            color=color
         )
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
+
         self.state = state
         self.flock = flock
+
         self.time = 0
         self.counter = 0
         self.site_name = ""
@@ -41,6 +45,8 @@ class Cockroach(Agent):
         self.T = self.T0
         self.t = 0
         self.C = 0.1
+
+        self.leader = leader
 
     def change_state(self, new_state):
         self.state = new_state
