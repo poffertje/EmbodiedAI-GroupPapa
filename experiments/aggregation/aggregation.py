@@ -54,4 +54,9 @@ class Aggregations(Swarm):
             ):
                 coordinates = generate_coordinates(self.screen)
 
-            self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index))
+            if int(index) % 10 == 0:
+                self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index,
+                                         leader=True, image="experiments/aggregation/images/leader.png"))
+            else:
+                self.add_agent(Cockroach(pos=np.array(coordinates), v=None, flock=self, state="wandering", index=index,
+                                     leader=False, image="experiments/aggregation/images/ant.png"))

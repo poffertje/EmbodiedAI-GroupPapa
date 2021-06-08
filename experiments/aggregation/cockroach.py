@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 class Cockroach(Agent):
     """ """
     def __init__(
-            self, pos, v, flock, state, index: int, image: str = "experiments/aggregation/images/ant.png"
+            self, pos, v, flock, state, index: int, leader, image
     ) -> None:
         super(Cockroach, self).__init__(
             pos,
             v,
-            image,
+            image=image,
             max_speed=config["agent"]["max_speed"],
             min_speed=config["agent"]["min_speed"],
             mass=config["agent"]["mass"],
@@ -22,12 +22,15 @@ class Cockroach(Agent):
             dT=config["agent"]["dt"],
             index=index
         )
+        self.image = image
+        print(self.image)
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
         self.state = state
         self.flock = flock
         self.time = 0
+        self.leader = leader
         self.counter = 0
         self.site_name = ""
         # self.min_bound = int(area(config["base"]["object_location"][0],110)[0])+5
@@ -45,38 +48,49 @@ class Cockroach(Agent):
         self.state = new_state
 
     def site_behavior(self,site_name):
-        if self.state == "wandering":
-            neighbours = self.flock.find_neighbors(self, config["cockroach"]["radius_view"])
-            still_neighbours = []
-            for neighbour in neighbours:
-                if neighbour.state == "still" or neighbour.state == "joining":
-                    still_neighbours.append(neighbour)
-            if len(still_neighbours) > 5:
-                nr_neighbours = len(still_neighbours)
-            else:
-                nr_neighbours = len(neighbours)
-            probability = float(0 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
-            if np.random.choice([True, False], p=[probability, 1 - probability]):
+        if self.leader:
+            if self.state == "wandering":
                 self.join()
-        elif self.state == "joining":
-            self.site_name = site_name
-            if time.time() - self.time > 0.25:
-                self.still()
-            else:
-                pass
-        elif self.state == "still":
-            self.counter += 1
-            if self.counter % 200 == 0:
-                nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-                #if nr_neighbours > 6:
-                probability = (1/nr_neighbours)**(1/self.T)
-                # print(probability)
-                    #probability = 1/(nr_neighbours*2)
-                if np.random.choice([True, False], p=[probability, 1-probability]):
-                    self.leave()
-        elif self.state == "leaving":
-            if time.time()-self.time > 5.0:
-                self.state = 'wandering'
+            elif self.state == "joining":
+                self.site_name = site_name
+                if time.time() - self.time > 0.25:
+                    self.still()
+                else:
+                    pass
+        else:
+            if self.state == "wandering":
+                neighbours = self.flock.find_neighbors(self, config["cockroach"]["radius_view"])
+                still_neighbours = []
+                for neighbour in neighbours:
+                    if neighbour.state == "still" or neighbour.state == "joining":
+                        still_neighbours.append(neighbour)
+                if len(still_neighbours) > 5:
+                    nr_neighbours = len(still_neighbours)
+                else:
+                    nr_neighbours = len(neighbours)
+                probability = float(0 if nr_neighbours == 0 else 1 - (1/nr_neighbours))
+                if np.random.choice([True, False], p=[probability, 1 - probability]):
+                    self.join()
+            elif self.state == "joining":
+                self.site_name = site_name
+                if time.time() - self.time > 0.25:
+                    self.still()
+                else:
+                    pass
+            elif self.state == "still":
+                self.counter += 1
+                if self.counter % 200 == 0:
+                    nr_neighbours = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
+                    #if nr_neighbours > 6:
+                    probability = (1/nr_neighbours)**(1/self.T)
+                    # print(probability)
+                        #probability = 1/(nr_neighbours*2)
+                    if np.random.choice([True, False], p=[probability, 1-probability]):
+                        self.leave()
+            elif self.state == "leaving":
+                if time.time()-self.time > 5.0:
+                    self.state = 'wandering'
+
     #update action
     def update_actions(self):
         # This is used to calculate the agents currently on site
@@ -156,3 +170,4 @@ class Cockroach(Agent):
         self.change_state("leaving")
         self.time = time.time()
         self.v = self.set_velocity()
+
