@@ -22,16 +22,20 @@ class Cockroach(Agent):
             dT=config["agent"]["dt"],
             index=index
         )
+        self.avoided_obstacles: bool = False
+        self.prev_pos = None
+        self.prev_v = None
         self.state = state
         self.flock = flock
         self.time = 0
         self.counter = 0
-        self.min_bound = int(area(config["base"]["object_location"][0],110)[0])+5
-        self.max_bound = int(area(config["base"]["object_location"][1],110)[1])-5
-        # self.min_bound1 = int(area(config["base"]["object_location"][0],110)[0])+5
-        # self.max_bound1 = int(area(config["base"]["object_location"][1],110)[1])-5
-        # self.min_bound2 = int(area(config["base"]["object_location"][0],90)[0])+5
-        # self.max_bound2 = int(area(config["base"]["object_location"][1],90)[1])-5
+        self.site_name = ""
+        # self.min_bound = int(area(config["base"]["object_location"][0],110)[0])+5
+        # self.max_bound = int(area(config["base"]["object_location"][1],110)[1])-5
+        self.min_bound1 = int(area(config["base"]["site1_location"][0],90)[0])+5
+        self.max_bound1 = int(area(config["base"]["site1_location"][0],90)[1])-5
+        self.min_bound2 = int(area(config["base"]["site2_location"][0],90)[0])+5
+        self.max_bound2 = int(area(config["base"]["site2_location"][0],90)[1])-5
         self.T0 = 1
         self.t = self.T0
         self.C = 0.1
@@ -40,7 +44,7 @@ class Cockroach(Agent):
     def change_state(self, new_state):
         self.state = new_state
 
-    def site_behavior(self):
+    def site_behavior(self,site_name):
         if self.state == "wandering":
             neighbours = self.flock.find_neighbors(self, config["cockroach"]["radius_view"])
             still_neighbours = []
@@ -55,6 +59,7 @@ class Cockroach(Agent):
             if np.random.choice([True, False], p=[probability, 1 - probability]):
                 self.join()
         elif self.state == "joining":
+            self.site_name = site_name
             if time.time() - self.time > 0.25:
                 self.still()
             else:
@@ -75,20 +80,42 @@ class Cockroach(Agent):
     #update action
     def update_actions(self):
         # This is used to calculate the agents currently on site
-        count_on_site_agents = 0
-
+        count_on_site_agents_1 = 0
+        count_on_site_agents_2 = 0
         # Access the list of all agents and add one to the counter for each instance of cockroach with state "still"
         for agent in self.flock.agents:
             if agent.state == "still":
-                count_on_site_agents += 1
-        print(count_on_site_agents)
-
+                if agent.site_name == "site1":
+                    count_on_site_agents_1 += 1
+                elif agent.site_name == "site2":
+                    count_on_site_agents_2 += 1
+        #
+        # print("Number of roaches in site 1: %s" % count_on_site_agents_1)
+        # print("Number of roaches in site 2: %d" % count_on_site_agents_2)
 
         # avoid any obstacles in the environment
         for obstacle in self.flock.objects.obstacles:
             collide = pygame.sprite.collide_mask(self, obstacle)
             if bool(collide):
+                # If boid gets stuck because when avoiding the obstacle ended up inside of the object,
+                # resets the position to the previous one and do a 180 degree turn back
+                if not self.avoided_obstacles:
+                    self.prev_pos = self.pos.copy()
+                    self.prev_v = self.v.copy()
+
+                else:
+                    self.pos = self.prev_pos.copy()
+                    self.v = self.prev_v.copy()
+
+                self.avoided_obstacles = True
                 self.avoid_obstacle()
+                return
+
+        self.prev_v = None
+        self.prev_pos = None
+
+        self.avoided_obstacles = False
+
         self.t += 1
         self.T = np.power((self.C * np.log(self.t + self.T0)), -1)
         # if the cockroach is inside an aggregation site, the site_behaviour function should determine what should be
@@ -96,11 +123,12 @@ class Cockroach(Agent):
         # if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
         #     self.site_behavior()
 
-        if isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
-            self.site_behavior()
+        if isInside(config["base"]["site1_location"][0],config["base"]["site1_location"][1],(self.max_bound1-self.min_bound1)/2,self.pos[0],self.pos[1]):
+            self.site_behavior("site1")
 
-        elif isInside(config["base"]["object_location"][0],config["base"]["object_location"][1],(self.max_bound-self.min_bound)/2,self.pos[0],self.pos[1]):
-            self.site_behavior()
+        elif isInside(config["base"]["site2_location"][0],config["base"]["site2_location"][1],(self.max_bound2-self.min_bound2)/2,self.pos[0],self.pos[1]):
+            self.site_behavior("site2")
+
 
         # if the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
         # is outside the site but in a different state, make sure to have it wander)
