@@ -91,7 +91,7 @@ class Cockroach(Agent):
             if self.state == "wandering":
                 # Get number of still neighbours
                 nr_neighbours = self.count_still_neighbours()
-                probability = float(0 if nr_neighbours == 0 else 1 - (1 / nr_neighbours))
+                probability = float(0.5 if nr_neighbours == 0 else 1 - (1 / nr_neighbours))
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.join()
 
