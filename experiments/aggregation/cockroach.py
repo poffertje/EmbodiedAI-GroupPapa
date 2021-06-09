@@ -45,11 +45,6 @@ class Cockroach(Agent):
         self.max_bound2 = int(area(loc2[0], scale2[0])[1]) - 5
         self.radius2 = (self.max_bound2 - self.min_bound2)/2
 
-        self.T0 = 1
-        self.T = self.T0
-        self.t = 0
-        self.C = 0.2
-
         self.leader = leader
         self.timer = time.time()
         self.largest_site_pos = [0, 0]
@@ -96,7 +91,12 @@ class Cockroach(Agent):
             if self.state == "wandering":
                 # Get number of still neighbours
                 nr_neighbours = self.count_still_neighbours()
-                probability = np.log(nr_neighbours+1.5)/np.log(config["base"]["n_agents"])
+                if site_name == "site1":
+                    extra = 0.1
+                elif site_name == "site2":
+                    extra = 0.1
+                probability = 1 if (1.1**(nr_neighbours-60))+extra > 1 else (1.1**(nr_neighbours-60))+extra
+                print("Joining probability: %f" % probability)
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.join()
 
@@ -115,8 +115,13 @@ class Cockroach(Agent):
                 # Every 200 iterations consider leaving
                 if self.counter % 200 == 0:
                     nr_neighbours = self.count_still_neighbours()
-                    a_probability = np.exp(-0.08*nr_neighbours)
-                    if np.random.choice([True, False], p=[a_probability, 1 - a_probability]):
+                    if site_name == "site1":
+                        extra = 1/self.radius1
+                    else:
+                        extra = 1/self.radius2
+                    probability = 1 if np.exp(-(0.08+extra)*(nr_neighbours)) > 1 else np.exp(-(0.08+extra)*(nr_neighbours))
+                    print("Leaving probability: %f" % probability)
+                    if np.random.choice([True, False], p=[probability, 1 - probability]):
                         self.leave()
 
             # Leaving state
@@ -130,9 +135,6 @@ class Cockroach(Agent):
         self.evaluate()
         # Avoid obstacles
         self.check_for_obstacles()
-
-        self.t += 1
-        self.T = np.power((self.C * np.log(self.t + self.T)), -1)
 
         # If a cockroach is inside an aggregation site, the site_behaviour function should determine
         # what the next action is going to be
@@ -204,8 +206,8 @@ class Cockroach(Agent):
                     count_on_site_agents_2 += 1
 
         # Comment/uncomment as needed
-        print("Number of roaches on site 1: %s" % count_on_site_agents_1)
-        print("Number of roaches on site 2: %d" % count_on_site_agents_2)
+        # print("Number of roaches on site 1: %s" % count_on_site_agents_1)
+        # print("Number of roaches on site 2: %d" % count_on_site_agents_2)
 
     def count_still_neighbours(self):
         # Find all current neighbours
