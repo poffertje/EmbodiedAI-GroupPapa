@@ -10,7 +10,8 @@ class Cockroach(Agent):
     """ """
 
     def __init__(
-            self, pos, v, flock, state, index: int, leader, image, color=None
+            self, pos, v, flock, state, index: int, leader, image, color, loc1,
+            loc2,scale1,scale2
     ) -> None:
         super(Cockroach, self).__init__(
             pos,
@@ -23,7 +24,7 @@ class Cockroach(Agent):
             height=config["agent"]["height"],
             dT=config["agent"]["dt"],
             index=index,
-            color=color
+            color=color,
         )
         self.avoided_obstacles: bool = False
         self.prev_pos = None
@@ -33,11 +34,15 @@ class Cockroach(Agent):
         self.time = 0
         self.counter = 0
         self.site_name = ""
-        self.min_bound1 = int(area(config["base"]["site1_location"][0], 110)[0]) + 5
-        self.max_bound1 = int(area(config["base"]["site1_location"][0], 110)[1]) - 5
+        self.loc1 = loc1
+        self.scale1 = scale1
+        self.min_bound1 = int(area(loc1[0], scale1[0])[0]) + 5
+        self.max_bound1 = int(area(loc1[0], scale1[0])[1]) - 5
         self.radius1 = (self.max_bound1 - self.min_bound1)/2
-        self.min_bound2 = int(area(config["base"]["site2_location"][0], 90)[0]) + 5
-        self.max_bound2 = int(area(config["base"]["site2_location"][0], 90)[1]) - 5
+        self.loc2 = loc2
+        self.scale2 = scale2
+        self.min_bound2 = int(area(loc2[0], scale2[0])[0]) + 5
+        self.max_bound2 = int(area(loc2[0], scale2[0])[1]) - 5
         self.radius2 = (self.max_bound2 - self.min_bound2)/2
 
         self.T0 = 1
@@ -91,7 +96,7 @@ class Cockroach(Agent):
             if self.state == "wandering":
                 # Get number of still neighbours
                 nr_neighbours = self.count_still_neighbours()
-                probability = float(0.5 if nr_neighbours == 0 else 1 - (1 / nr_neighbours))
+                probability = np.log(nr_neighbours+1.5)/np.log(config["base"]["n_agents"])
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.join()
 
@@ -110,7 +115,7 @@ class Cockroach(Agent):
                 # Every 200 iterations consider leaving
                 if self.counter % 200 == 0:
                     nr_neighbours = self.count_still_neighbours()
-                    a_probability = 0 if nr_neighbours == 0 else (1 / nr_neighbours) ** (1 / self.T)
+                    a_probability = np.exp(-0.08*nr_neighbours)
                     if np.random.choice([True, False], p=[a_probability, 1 - a_probability]):
                         self.leave()
 
@@ -132,11 +137,11 @@ class Cockroach(Agent):
         # If a cockroach is inside an aggregation site, the site_behaviour function should determine
         # what the next action is going to be
         if (time.time() - self.timer < config["cockroach"]["explore_timer"] and self.leader) or not(self.leader):
-            if isInside(config["base"]["site1_location"][0], config["base"]["site1_location"][1], self.radius1, self.pos[0],
+            if isInside(self.loc1[0], self.loc1[1], self.radius1, self.pos[0],
                         self.pos[1]):
                 self.site_behavior("site1", self.leader)
 
-            elif isInside(config["base"]["site2_location"][0], config["base"]["site2_location"][1], self.radius2,self.pos[0],
+            elif isInside(self.loc2[0], self.loc2[1], self.radius2,self.pos[0],
                           self.pos[1]):
                 self.site_behavior("site2", self.leader)
             else:
@@ -199,8 +204,8 @@ class Cockroach(Agent):
                     count_on_site_agents_2 += 1
 
         # Comment/uncomment as needed
-        # print("Number of roaches on site 1: %s" % count_on_site_agents_1)
-        # print("Number of roaches on site 2: %d" % count_on_site_agents_2)
+        print("Number of roaches on site 1: %s" % count_on_site_agents_1)
+        print("Number of roaches on site 2: %d" % count_on_site_agents_2)
 
     def count_still_neighbours(self):
         # Find all current neighbours
