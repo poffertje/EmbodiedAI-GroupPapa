@@ -25,11 +25,9 @@ class Cockroach(Agent):
             index=index,
             color=color
         )
-
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
-
         self.state = state
         self.flock = flock
         self.time = 0
@@ -66,6 +64,8 @@ class Cockroach(Agent):
             elif self.state == "joining":
                 # Update the attribute to evaluate the number of agents
                 self.site_name = site_name
+                if self.site_name == "site1":
+                    Agent.set_color(self,(255,0,0))
                 current_site_pos, current_site_size, radius = site_info(site_name)
                 if current_site_size > self.largest_site_size:
                     self.largest_site_size = current_site_size

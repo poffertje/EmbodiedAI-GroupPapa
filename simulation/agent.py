@@ -73,6 +73,8 @@ class Agent(pygame.sprite.Sprite):  # super class
         self.angle = None
         self.index = index
         self.image_file = image
+        self.width = width
+        self.height = height
         if self.image_file is not None:  # load image from file
             if not Agent.base_image:
                 Agent.base_image, Agent.rect = image_with_rect(
@@ -158,6 +160,9 @@ class Agent(pygame.sprite.Sprite):  # super class
 
         self.angle = angle
 
+    def set_color(self,color):
+        self.image.fill(color)
+
     def set_velocity(self) -> List[int]:
         """Determines a "random" velocity based on a random angle and x and y random speed components"""
         angle = np.pi * (2 * np.random.rand() - 1)
@@ -221,7 +226,6 @@ class Agent(pygame.sprite.Sprite):  # super class
 
         """
         screen.blit(self.image, self.rect)
-        print(self.image)
 
     def reset_frame(self) -> None:
         """Reset the steering value for the next computations"""
