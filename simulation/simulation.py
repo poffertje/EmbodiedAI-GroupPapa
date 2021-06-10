@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pygame
 import scipy
+import os
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
@@ -37,7 +38,6 @@ def _plot_covid(data) -> None:
     fig.savefig(output_name)
     plt.show()
 
-
 def _plot_flock() -> None:
     """Plot the data related to the flocking experiment. TODO"""
     pass
@@ -64,6 +64,7 @@ def _plot_aggregation(data1,data2) -> None:
     # print(data1)
     # print("site2")
     # print(data2)
+
 
 
 """
@@ -171,6 +172,15 @@ class Simulation:
                 self.simulate()
                 site1.append(self.swarm.agents[0].evaluate()[0])
                 site2.append(self.swarm.agents[0].evaluate()[1])
+                if i == 50:
+                    self.make_screenshot(i)
             self.plot_simulation(site1,site2)
 
+    def make_screenshot(self, index):
+        folder, _ = os.path.split(os.path.dirname(__file__))
+        folder = os.path.join(folder, 'experiments/aggregation/screenshots')
+        print(folder)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
+        pygame.image.save(self.screen, os.path.join(folder, f'screenshot{index:03d}.png'))
