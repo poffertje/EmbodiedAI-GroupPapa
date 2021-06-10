@@ -41,9 +41,12 @@ def _plot_flock() -> None:
     pass
 
 
-def _plot_aggregation() -> None:
+def _plot_aggregation(data1,data2) -> None:
     """Plot the data related to the aggregation experiment. TODO"""
-    pass
+    print("site1")
+    print(data1)
+    print("site2")
+    print(data2)
 
 
 """
@@ -97,16 +100,16 @@ class Simulation:
         self.to_display = pygame.sprite.Group()
         self.running = True
 
-    def plot_simulation(self) -> None:
+    def plot_simulation(self,data1,data2) -> None:
         """Depending on the type of experiment, plots the final data accordingly"""
-        if self.swarm_type == "Covid":
+        if self.swarm_type == "covid":
             _plot_covid(self.swarm.points_to_plot)
 
-        elif self.swarm_type == "Flock":
+        elif self.swarm_type == "flock":
             _plot_flock()
 
-        elif self.swarm_type == "Aggregation":
-            _plot_aggregation()
+        elif self.swarm_type == "aggregation":
+            _plot_aggregation(data1,data2)
 
     def initialize(self) -> None:
         """Initialize the swarm, specifying the number of agents to be generated"""
@@ -137,15 +140,20 @@ class Simulation:
         self.initialize()
         # the simulation loop, infinite until the user exists the simulation
         # finite time parameter or infinite
-
+        site1 = []
+        site2 = []
         if self.iter == float("inf"):
-
             while self.running:
                 init = time.time()
                 self.simulate()
-
+                site1.append(self.swarm.agents[0].evaluate()[0])
+                site2.append(self.swarm.agents[0].evaluate()[1])
             self.plot_simulation()
         else:
             for i in range(self.iter):
                 self.simulate()
-            self.plot_simulation()
+                site1.append(self.swarm.agents[0].evaluate()[0])
+                site2.append(self.swarm.agents[0].evaluate()[1])
+            self.plot_simulation(site1,site2)
+
+

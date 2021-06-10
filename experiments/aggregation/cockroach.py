@@ -97,7 +97,7 @@ class Cockroach(Agent):
                     probability = 0.10
                 else:
                     probability = 0.50
-                print("Joining probability: %f" % probability)
+                # print("Joining probability: %f" % probability)
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.join()
 
@@ -123,7 +123,7 @@ class Cockroach(Agent):
                         probability = 0.30
                     else:
                         probability = 0.02
-                    print("Leaving probability: %f" % probability)
+                    # print("Leaving probability: %f" % probability)
                     if np.random.choice([True, False], p=[probability, 1 - probability]):
                         self.leave()
 
@@ -211,6 +211,8 @@ class Cockroach(Agent):
         # Comment/uncomment as needed
         # print("Number of roaches on site 1: %s" % count_on_site_agents_1)
         # print("Number of roaches on site 2: %d" % count_on_site_agents_2)
+
+        return count_on_site_agents_1,count_on_site_agents_2
 
     def count_still_neighbours(self):
         # Find all current neighbours
