@@ -50,13 +50,17 @@ def _plot_aggregation(data1, data2, data3) -> None:
     x_new = np.linspace(0, t, 100)
     y1 = data1
     y2 = data2
+    y3 = data3 #wandering agents
     a_BSpline = scipy.interpolate.make_interp_spline(x1, y1)
     b_BSpline = scipy.interpolate.make_interp_spline(x1, y2)
+    c_BSpline = scipy.interpolate.make_interp_spline(x1, y3)
     y1_new = a_BSpline(x_new)
     y2_new = b_BSpline(x_new)
+    y3_new = c_BSpline(x_new)
     plt.title('Rate of Aggregation')
     plt.plot(x_new, y1_new, label = "Site 1", color = 'red')
     plt.plot(x_new, y2_new, label = "Site 2", color = 'blue')
+    plt.plot(x_new, y3_new, label = "Wandering", color = 'black', linestyle='--')
     plt.legend()
     plt.xlabel('Number of Frames'), plt.ylabel('Number of Cockroaches')
     plt.show()
