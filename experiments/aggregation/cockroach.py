@@ -91,11 +91,12 @@ class Cockroach(Agent):
             if self.state == "wandering":
                 # Get number of still neighbours
                 nr_neighbours = self.count_still_neighbours()
-                if site_name == "site1":
-                    extra = 0.1
-                elif site_name == "site2":
-                    extra = 0.1
-                probability = 1 if (1.1**(nr_neighbours-60))+extra > 1 else (1.1**(nr_neighbours-60))+extra
+                if nr_neighbours >= 0 and nr_neighbours <= 5:
+                    probability = 0.05
+                elif nr_neighbours > 5 and nr_neighbours <= 10:
+                    probability = 0.10
+                else:
+                    probability = 0.50
                 print("Joining probability: %f" % probability)
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.join()
@@ -115,11 +116,13 @@ class Cockroach(Agent):
                 # Every 200 iterations consider leaving
                 if self.counter % 200 == 0:
                     nr_neighbours = self.count_still_neighbours()
-                    if site_name == "site1":
-                        extra = 1/self.radius1
+                    # probability = 1/np.exp(np.log(nr_neighbours+1)/np.log(10))
+                    if nr_neighbours >= 0 and nr_neighbours <= 5:
+                        probability = 0.75
+                    elif nr_neighbours > 5 and nr_neighbours <= 10:
+                        probability = 0.30
                     else:
-                        extra = 1/self.radius2
-                    probability = 1 if np.exp(-(0.08+extra)*(nr_neighbours)) > 1 else np.exp(-(0.08+extra)*(nr_neighbours))
+                        probability = 0.02
                     print("Leaving probability: %f" % probability)
                     if np.random.choice([True, False], p=[probability, 1 - probability]):
                         self.leave()
@@ -153,7 +156,7 @@ class Cockroach(Agent):
                     # Wiggle motion
                     if (self.leader and time.time() - self.timer < config["cockroach"]["explore_timer"]) or not (
                     self.leader):
-                        self.v += [randrange(-5, 5), randrange(-5, 5)]
+                        self.v = self.wander(randrange(0,5),randrange(-5,5),randrange(0,180))
                 if self.state != "wandering":
                     self.change_state("wandering")
                 else:
