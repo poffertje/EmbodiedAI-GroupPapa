@@ -154,7 +154,7 @@ class Cockroach(Agent):
                     # Wiggle motion
                     if (self.leader and time.time() - self.timer < config["cockroach"]["explore_timer"]) or not (
                     self.leader):
-                        self.v = self.wander(randrange(0,5),randrange(-5,5),randrange(0,180))
+                        self.v = self.wander(randrange(0,30),randrange(-10,10),randrange(0,180))
                 if self.state != "wandering":
                     self.change_state("wandering")
                 else:

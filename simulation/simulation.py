@@ -68,6 +68,9 @@ def _plot_aggregation(data1, data2, data3) -> None:
     # print(data1)
     # print("site2")
     # print(data2)
+    print("Site 1 last reading: %d " % data1[-1])
+    print("Site 2 last reading: %d " % data2[-1])
+    print("Wandering last reading: %d" %data3[-1])
 
 
 
@@ -180,7 +183,15 @@ class Simulation:
                 site1.append(self.swarm.agents[0].evaluate()[0])
                 site2.append(self.swarm.agents[0].evaluate()[1])
                 wandering.append(self.swarm.agents[0].evaluate()[2])
-                if i == 10:
+                if i == 100:
+                    self.make_screenshot(i)
+                elif i == 2000:
+                    self.make_screenshot(i)
+                elif i == 4000:
+                    self.make_screenshot(i)
+                elif i == 8000:
+                    self.make_screenshot(i)
+                elif i == 12000:
                     self.make_screenshot(i)
             self.plot_simulation(site1, site2, wandering)
 
@@ -193,4 +204,4 @@ class Simulation:
         if not os.path.exists(folder):
             os.makedirs(folder)
         # Save the screenshot as a png with the index corresponding to the frame index
-        pygame.image.save(self.screen, os.path.join(folder, f'screenshot{index:03d}.png'))
+        pygame.image.save(self.screen, os.path.join(folder, f'screenshot_20radius_100population{index:03d}.png'))
