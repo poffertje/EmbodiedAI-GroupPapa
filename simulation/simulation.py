@@ -43,7 +43,7 @@ def _plot_flock() -> None:
     pass
 
 
-def _plot_aggregation(data1,data2) -> None:
+def _plot_aggregation(data1, data2, data3) -> None:
     """Plot the data related to the aggregation experiment. TODO"""
     t = len(data1)
     x1= range(t)
@@ -118,7 +118,7 @@ class Simulation:
         self.to_display = pygame.sprite.Group()
         self.running = True
 
-    def plot_simulation(self,data1,data2) -> None:
+    def plot_simulation(self,data1,data2, data3) -> None:
         """Depending on the type of experiment, plots the final data accordingly"""
         if self.swarm_type == "covid":
             _plot_covid(self.swarm.points_to_plot)
@@ -127,7 +127,7 @@ class Simulation:
             _plot_flock()
 
         elif self.swarm_type == "aggregation":
-            _plot_aggregation(data1,data2)
+            _plot_aggregation(data1,data2, data3)
 
     def initialize(self) -> None:
         """Initialize the swarm, specifying the number of agents to be generated"""
@@ -160,27 +160,33 @@ class Simulation:
         # finite time parameter or infinite
         site1 = []
         site2 = []
+        wandering = []
+
         if self.iter == float("inf"):
             while self.running:
                 init = time.time()
                 self.simulate()
                 site1.append(self.swarm.agents[0].evaluate()[0])
                 site2.append(self.swarm.agents[0].evaluate()[1])
+                wandering.append(self.swarm.agents[0].evaluate()[2])
             self.plot_simulation()
         else:
             for i in range(self.iter):
                 self.simulate()
                 site1.append(self.swarm.agents[0].evaluate()[0])
                 site2.append(self.swarm.agents[0].evaluate()[1])
-                if i == 50:
+                wandering.append(self.swarm.agents[0].evaluate()[2])
+                if i == 5000:
                     self.make_screenshot(i)
-            self.plot_simulation(site1,site2)
+            self.plot_simulation(site1, site2, wandering)
 
     def make_screenshot(self, index):
+        # Get the path to the current folder
         folder, _ = os.path.split(os.path.dirname(__file__))
-        folder = os.path.join(folder, 'experiments/aggregation/screenshots')
-        print(folder)
+        # Find a path to the screenshot folder
+        folder = os.path.join(folder, 'experiments/ %s aggregation/screenshots')
+        # If the path does not exist yet, then create one
         if not os.path.exists(folder):
             os.makedirs(folder)
-
+        # Save the screenshot as a png with the index corresponding to the frame index
         pygame.image.save(self.screen, os.path.join(folder, f'screenshot{index:03d}.png'))
