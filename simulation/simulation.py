@@ -1,8 +1,10 @@
 import sys
 import time
-
+import numpy as np
 import matplotlib.pyplot as plt
 import pygame
+import scipy
+from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
 
@@ -43,10 +45,25 @@ def _plot_flock() -> None:
 
 def _plot_aggregation(data1,data2) -> None:
     """Plot the data related to the aggregation experiment. TODO"""
-    print("site1")
-    print(data1)
-    print("site2")
-    print(data2)
+    t = len(data1)
+    x1= range(t)
+    x_new = np.linspace(0, t, 100)
+    y1 = data1
+    y2 = data2
+    a_BSpline = scipy.interpolate.make_interp_spline(x1, y1)
+    b_BSpline = scipy.interpolate.make_interp_spline(x1, y2)
+    y1_new = a_BSpline(x_new)
+    y2_new = b_BSpline(x_new)
+    plt.title('Rate of Aggregation')
+    plt.plot(x_new, y1_new, label = "Site 1", color = 'red')
+    plt.plot(x_new, y2_new, label = "Site 2", color = 'blue')
+    plt.legend()
+    plt.xlabel('Number of Frames'), plt.ylabel('Number of Cockroaches')
+    plt.show()
+    # print("site1")
+    # print(data1)
+    # print("site2")
+    # print(data2)
 
 
 """
