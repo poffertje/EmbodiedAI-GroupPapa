@@ -180,7 +180,7 @@ class Simulation:
                 site1.append(self.swarm.agents[0].evaluate()[0])
                 site2.append(self.swarm.agents[0].evaluate()[1])
                 wandering.append(self.swarm.agents[0].evaluate()[2])
-                if i == 5000:
+                if i == 10:
                     self.make_screenshot(i)
             self.plot_simulation(site1, site2, wandering)
 
@@ -188,7 +188,7 @@ class Simulation:
         # Get the path to the current folder
         folder, _ = os.path.split(os.path.dirname(__file__))
         # Find a path to the screenshot folder
-        folder = os.path.join(folder, 'experiments/ %s aggregation/screenshots')
+        folder = os.path.join(folder, 'experiments/%s/screenshots' %self.swarm_type)
         # If the path does not exist yet, then create one
         if not os.path.exists(folder):
             os.makedirs(folder)
