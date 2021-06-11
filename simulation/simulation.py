@@ -204,4 +204,4 @@ class Simulation:
         if not os.path.exists(folder):
             os.makedirs(folder)
         # Save the screenshot as a png with the index corresponding to the frame index
-        pygame.image.save(self.screen, os.path.join(folder, f'screenshot_20radius_100population{index:03d}.png'))
+        pygame.image.save(self.screen, os.path.join(folder, f'screenshot_30radius_100population{index:03d}.png'))

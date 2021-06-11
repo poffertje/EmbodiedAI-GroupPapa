@@ -116,6 +116,12 @@ class Cockroach(Agent):
                 # Every 200 iterations consider leaving
                 if self.counter % 200 == 0:
                     nr_neighbours = self.count_still_neighbours()
+                    # if nr_neighbours >= 0 and nr_neighbours <= 5:
+                    #     probability = 0.75
+                    # elif nr_neighbours > 5 and nr_neighbours <= 10:
+                    #     probability = 0.3
+                    # else:
+                    #     probability = 0.05
                     # probability = 1/np.exp(np.log(nr_neighbours+1)/np.log(10))
                     a, h, k = 3.2, 1.5, 0.6
                     probability = (a * np.exp((-k) * (nr_neighbours) + h)) + 0.02
@@ -154,7 +160,7 @@ class Cockroach(Agent):
                     # Wiggle motion
                     if (self.leader and time.time() - self.timer < config["cockroach"]["explore_timer"]) or not (
                     self.leader):
-                        self.v = self.wander(randrange(0, 5), randrange(-5, 5), randrange(0, 180))
+                        self.v = self.wander(randrange(0, 20), randrange(-10, 10), randrange(0, 180))
                 if self.state != "wandering":
                     self.change_state("wandering")
                 else:
