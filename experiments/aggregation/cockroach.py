@@ -125,11 +125,6 @@ class Cockroach(Agent):
                     if np.random.choice([True, False], p=[probability, 1 - probability]):
                         self.leave()
 
-            # Leaving state
-            elif self.state == "leaving":
-                if time.time() - self.time > 5.0:
-                    self.state = 'wandering'
-
     # Update the state of the roach
     def update_actions(self):
         # Call to evaluate the agents on site
@@ -150,12 +145,12 @@ class Cockroach(Agent):
             else:
                 # If the cockroach is outside the aggregation site, it should just wander (and if for some reason, the cockroach
                 # is outside the site but in a different state, make sure to have it wander)
-                if np.random.choice([True, False], p=[0.1, 0.9]):
+                if np.random.choice([True, False], p=[0.1, 0.9]) and self.state != "leaving":
                     # Wiggle motion
                     if (self.leader and time.time() - self.timer < config["cockroach"]["explore_timer"]) or not (
                     self.leader):
-                        self.v = self.wander(randrange(0, 5), randrange(-5, 5), randrange(0, 180))
-                if self.state != "wandering":
+                        self.v = self.wander(randrange(0, 20), randrange(-10, 10), randrange(0, 180))
+                elif time.time() - self.time >= 10 and self.state == "leaving":
                     self.change_state("wandering")
                 else:
                     pass
