@@ -163,37 +163,25 @@ class Simulation:
         """
         # initialize the environment and agent/obstacle positions
         self.initialize()
-        # the simulation loop, infinite until the user exists the simulation
-        # finite time parameter or infinite
-        site1 = []
-        site2 = []
-        wandering = []
 
         if self.iter == float("inf"):
             while self.running:
                 init = time.time()
                 self.simulate()
-                site1.append(self.swarm.agents[0].evaluate()[0])
-                site2.append(self.swarm.agents[0].evaluate()[1])
-                wandering.append(self.swarm.agents[0].evaluate()[2])
             self.plot_simulation()
         else:
             for i in range(self.iter):
                 self.simulate()
-                site1.append(self.swarm.agents[0].evaluate()[0])
-                site2.append(self.swarm.agents[0].evaluate()[1])
-                wandering.append(self.swarm.agents[0].evaluate()[2])
-                if i == 100:
-                    self.make_screenshot(i)
-                elif i == 2000:
-                    self.make_screenshot(i)
-                elif i == 4000:
-                    self.make_screenshot(i)
-                elif i == 8000:
-                    self.make_screenshot(i)
-                elif i == 12000:
-                    self.make_screenshot(i)
-            self.plot_simulation(site1, site2, wandering)
+                # if i == 100:
+                #     self.make_screenshot(i)
+                # elif i == 2000:
+                #     self.make_screenshot(i)
+                # elif i == 4000:
+                #     self.make_screenshot(i)
+                # elif i == 8000:
+                #     self.make_screenshot(i)
+                # elif i == 12000:
+                #     self.make_screenshot(i)
 
     def make_screenshot(self, index):
         # Get the path to the current folder

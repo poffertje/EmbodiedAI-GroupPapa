@@ -21,18 +21,23 @@ class Population(Swarm):
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
-        coordinates = generate_coordinates(self.screen)
 
-        if config["population"]["obstacles"]:  # you need to define this variable
-            for obj in self.objects.obstacles:
-                rel_coordinate = relative(
-                    coordinates, (obj.rect[0], obj.rect[1])
-                )
-                try:
-                    while obj.mask.get_at(rel_coordinate):
-                        coordinates = generate_coordinates(self.screen)
-                        rel_coordinate = relative(
-                            coordinates, (obj.rect[0], obj.rect[1])
-                        )
-                except IndexError:
-                    pass
+        for index, agent in enumerate(range(num_agents)):
+            coordinates = generate_coordinates(self.screen)
+
+            self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="non-infected", index=index,
+                                  color=[255,165,0]))
+
+        # if config["population"]["obstacles"]:  # you need to define this variable
+        #     for obj in self.objects.obstacles:
+        #         rel_coordinate = relative(
+        #             coordinates, (obj.rect[0], obj.rect[1])
+        #         )
+        #         try:
+        #             while obj.mask.get_at(rel_coordinate):
+        #                 coordinates = generate_coordinates(self.screen)
+        #                 rel_coordinate = relative(
+        #                     coordinates, (obj.rect[0], obj.rect[1])
+        #                 )
+        #         except IndexError:
+        #             pass
