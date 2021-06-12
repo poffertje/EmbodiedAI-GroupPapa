@@ -1,3 +1,5 @@
+import time
+
 from experiments.covid.config import config
 from experiments.covid.person import Person
 from simulation.swarm import Swarm
@@ -24,9 +26,12 @@ class Population(Swarm):
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
-
-            self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="non-infected", index=index,
-                                  color=[255,165,0]))
+            if index % 5 == 0:
+                self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="infected", index=index,
+                                      color=[255,69,0],timer=time.time()))
+            else:
+                self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="non-infected", index=index,
+                                  color=[255,165,0],timer=None))
 
         # if config["population"]["obstacles"]:  # you need to define this variable
         #     for obj in self.objects.obstacles:
