@@ -28,6 +28,7 @@ class Person(Agent):
         self.timer = timer
 
     def update_actions(self):
+        print(self.state)
         if np.random.choice([True, False], p=[0.1, 0.9]):
             self.v = self.wander(30, randrange(0, 10), randrange(0, 180))
         if self.timer != None:
@@ -39,3 +40,4 @@ class Person(Agent):
             if neighbour.state == "infected" and self.state == "non-infected":
                 Agent.set_color(self,[255,69,0])
                 self.timer = time.time()
+                self.state = "infected"
