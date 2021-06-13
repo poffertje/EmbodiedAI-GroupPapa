@@ -28,16 +28,21 @@ class Person(Agent):
         self.timer = timer
 
     def update_actions(self):
-        print(self.state)
         if np.random.choice([True, False], p=[0.1, 0.9]):
             self.v = self.wander(30, randrange(0, 10), randrange(0, 180))
         if self.timer != None:
-            if time.time() - self.timer >= 10 and self.state == "infected":
+            if time.time() - self.timer >= 10 and self.state == "I":
                 Agent.set_color(self, [0, 255, 0])
-                self.state == "recovered"
+                self.state == "R"
         neighbours = self.flock.find_neighbors(self, config["person"]["radius_view"])
         for neighbour in neighbours:
-            if neighbour.state == "infected" and self.state == "non-infected":
+            if neighbour.state == "I" and self.state == "S":
                 Agent.set_color(self,[255,69,0])
                 self.timer = time.time()
-                self.state = "infected"
+                self.state = "I"
+        self.evaluate()
+
+    def evaluate(self):
+        if self.index == 0:
+            for agent in self.flock.agents:
+                self.flock.datapoints.append(agent.state)

@@ -27,10 +27,10 @@ class Population(Swarm):
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
             if index % 5 == 0:
-                self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="infected", index=index,
+                self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
                                       color=[255,69,0],timer=time.time()))
             else:
-                self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="non-infected", index=index,
+                self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                   color=[255,165,0],timer=None))
 
         # if config["population"]["obstacles"]:  # you need to define this variable
