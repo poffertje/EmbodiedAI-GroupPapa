@@ -7,6 +7,9 @@ frames = inf
 height = 1000
 width  = 1000
 
+[population]
+obstacles = true
+
 [person]
 radius_view = 20
 

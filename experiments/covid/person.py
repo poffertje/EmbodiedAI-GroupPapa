@@ -26,23 +26,51 @@ class Person(Agent):
         self.state = state
         self.flock = flock
         self.timer = timer
+        self.avoided_obstacles: bool = False
+        self.prev_pos = None
+        self.prev_v = None
 
     def update_actions(self):
-        if np.random.choice([True, False], p=[0.1, 0.9]):
-            self.v = self.wander(30, randrange(0, 10), randrange(0, 180))
+        self.evaluate()
+        # Avoid obstacles
+        self.check_for_obstacles()
+
         if self.timer != None:
             if time.time() - self.timer >= 10 and self.state == "I":
                 Agent.set_color(self, [0, 255, 0])
-                self.state == "R"
+                self.state = "R"
         neighbours = self.flock.find_neighbors(self, config["person"]["radius_view"])
         for neighbour in neighbours:
             if neighbour.state == "I" and self.state == "S":
-                Agent.set_color(self,[255,69,0])
-                self.timer = time.time()
-                self.state = "I"
-        self.evaluate()
+                if np.random.choice([True, False], p=[0.1, 0.9]):
+                    Agent.set_color(self,[255,69,0])
+                    self.timer = time.time()
+                    self.state = "I"
 
     def evaluate(self):
         if self.index == 0:
             for agent in self.flock.agents:
                 self.flock.datapoints.append(agent.state)
+
+    def check_for_obstacles(self):
+        # Avoid any obstacles in the environment
+        for obstacle in self.flock.objects.obstacles:
+            collide = pygame.sprite.collide_mask(self, obstacle)
+            if bool(collide):
+                # If a roach gets stuck because when avoiding the obstacle ended up inside of the object,
+                # reset the position to the previous one and do a 180 degree turn
+                if not self.avoided_obstacles:
+                    self.prev_pos = self.pos.copy()
+                    self.prev_v = self.v.copy()
+
+                else:
+                    self.pos = self.prev_pos.copy()
+                    self.v = self.prev_v.copy()
+
+                self.avoided_obstacles = True
+                self.avoid_obstacle()
+                return
+
+        self.prev_v = None
+        self.prev_pos = None
+        self.avoided_obstacles = False

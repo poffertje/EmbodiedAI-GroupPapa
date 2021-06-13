@@ -19,6 +19,9 @@ class Population(Swarm):
             num_agents (int):
 
         """
+        obstacle_loc = [randrange(0,1000),randrange(0,1000)]
+        obstacle_scale = [200, 200]
+        obstacle_filename = "experiments/covid/images/test.png"
 
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
@@ -33,16 +36,20 @@ class Population(Swarm):
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                   color=[255,165,0],timer=None))
 
-        # if config["population"]["obstacles"]:  # you need to define this variable
-        #     for obj in self.objects.obstacles:
-        #         rel_coordinate = relative(
-        #             coordinates, (obj.rect[0], obj.rect[1])
-        #         )
-        #         try:
-        #             while obj.mask.get_at(rel_coordinate):
-        #                 coordinates = generate_coordinates(self.screen)
-        #                 rel_coordinate = relative(
-        #                     coordinates, (obj.rect[0], obj.rect[1])
-        #                 )
-        #         except IndexError:
-        #             pass
+        if config["population"]["obstacles"]:  # you need to define this variable
+            for obj in self.objects.obstacles:
+                rel_coordinate = relative(
+                    coordinates, (obj.rect[0], obj.rect[1])
+                )
+                try:
+                    while obj.mask.get_at(rel_coordinate):
+                        coordinates = generate_coordinates(self.screen)
+                        rel_coordinate = relative(
+                            coordinates, (obj.rect[0], obj.rect[1])
+                        )
+                except IndexError:
+                    pass
+
+        self.objects.add_object(
+            file=None, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
+        )
