@@ -125,7 +125,7 @@ class Simulation:
         self.to_display = pygame.sprite.Group()
         self.running = True
 
-    def plot_simulation(self,data1,data2, data3) -> None:
+    def plot_simulation(self,data1=None,data2=None, data3=None) -> None:
         """Depending on the type of experiment, plots the final data accordingly"""
         if self.swarm_type == "covid":
             _plot_covid(self.swarm.points_to_plot)
