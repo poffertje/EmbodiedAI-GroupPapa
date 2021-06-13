@@ -51,5 +51,5 @@ class Population(Swarm):
                     pass
 
         self.objects.add_object(
-            file=None, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
+            file=obstacle_filename, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
         )
