@@ -1,4 +1,5 @@
 import time
+import random
 
 from experiments.covid.config import config
 from experiments.covid.person import Person
@@ -19,9 +20,13 @@ class Population(Swarm):
             num_agents (int):
 
         """
-        obstacle_loc = [randrange(0,1000),randrange(0,1000)]
         obstacle_scale = [200, 200]
-        obstacle_filename = "experiments/covid/images/test.png"
+        obstacle_loc = [random.randint(100, 900), random.randint(100, 900)]
+        obstacle_filename = "experiments/covid/images/lockdown-border.png"
+
+        self.objects.add_object(
+            file=obstacle_filename, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
+        )
 
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
@@ -29,6 +34,21 @@ class Population(Swarm):
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
+
+            if config["population"]["obstacles"]:  # you need to define this variable
+                for obj in self.objects.obstacles:
+                    rel_coordinate = relative(
+                        coordinates, (obj.rect[0], obj.rect[1])
+                    )
+                    try:
+                        while obj.mask.get_at(rel_coordinate):
+                            coordinates = generate_coordinates(self.screen)
+                            rel_coordinate = relative(
+                                coordinates, (obj.rect[0], obj.rect[1])
+                            )
+                    except IndexError:
+                        pass
+
             if index % 5 == 0:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
                                       color=[255,69,0],timer=time.time()))
@@ -36,20 +56,4 @@ class Population(Swarm):
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                   color=[255,165,0],timer=None))
 
-        if config["population"]["obstacles"]:  # you need to define this variable
-            for obj in self.objects.obstacles:
-                rel_coordinate = relative(
-                    coordinates, (obj.rect[0], obj.rect[1])
-                )
-                try:
-                    while obj.mask.get_at(rel_coordinate):
-                        coordinates = generate_coordinates(self.screen)
-                        rel_coordinate = relative(
-                            coordinates, (obj.rect[0], obj.rect[1])
-                        )
-                except IndexError:
-                    pass
 
-        self.objects.add_object(
-            file=obstacle_filename, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
-        )

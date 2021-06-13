@@ -29,19 +29,28 @@ class Person(Agent):
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
+        self.in_lockdown = False
 
     def update_actions(self):
         self.evaluate()
         # Avoid obstacles
         self.check_for_obstacles()
 
+        for object in self.flock.objects.obstacles:
+            if self.pos[0] and self.pos[1] in range(int(area(object.pos[0],object.scale[0])[0]),int(area(object.pos[1],object.scale[1])[1])):
+                self.in_lockdown = True
+            else:
+                self.in_lockdown = False
+
         if self.timer != None:
             if time.time() - self.timer >= 10 and self.state == "I":
                 Agent.set_color(self, [0, 255, 0])
                 self.state = "R"
+
         neighbours = self.flock.find_neighbors(self, config["person"]["radius_view"])
+
         for neighbour in neighbours:
-            if neighbour.state == "I" and self.state == "S":
+            if neighbour.state == "I" and self.state == "S" and self.in_lockdown == neighbour.in_lockdown:
                 if np.random.choice([True, False], p=[0.1, 0.9]):
                     Agent.set_color(self,[255,69,0])
                     self.timer = time.time()

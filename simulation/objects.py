@@ -63,6 +63,7 @@ class Object(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.pos: np.ndarray = pos if pos is not None else np.zeros(2)
         self.rect = self.image.get_rect(center=self.pos)
+        self.scale = scale
 
     def display(self, screen) -> None:
         """

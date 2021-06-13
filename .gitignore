@@ -14,3 +14,5 @@ experiments/aggregation/__pycache__/
 
 experiments/covid/__pycache__/
 /experiments/aggregation/screenshots/
+
+experiments/covid/plots/
