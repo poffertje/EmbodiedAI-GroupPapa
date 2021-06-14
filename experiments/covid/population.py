@@ -1,5 +1,6 @@
 import time
 import random
+import pygame
 
 from experiments.covid.config import config
 from experiments.covid.person import Person
@@ -20,14 +21,6 @@ class Population(Swarm):
             num_agents (int):
 
         """
-        obstacle_scale = [200, 200]
-        obstacle_loc = [random.randint(100, 900), random.randint(100, 900)]
-        obstacle_filename = "experiments/covid/images/lockdown-border.png"
-
-        self.objects.add_object(
-            file=obstacle_filename, pos=obstacle_loc, scale=obstacle_scale, obj_type="obstacle"
-        )
-
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
@@ -51,9 +44,9 @@ class Population(Swarm):
 
             if index % 5 == 0:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
-                                      color=[255,69,0],timer=time.time()))
+                                      color=[255,69,0],timer=time.time(),
+                                      age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3])))
             else:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
-                                  color=[255,165,0],timer=None))
-
-
+                                      color=[255,165,0],timer=None,
+                                      age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3])))

@@ -196,15 +196,3 @@ def isInside(circle_x, circle_y, rad, x, y):
         return True;
     else:
         return False;
-
-def site_info(site_name):
-    if site_name == "site1":
-        site_pos = [285,500]
-        site_scale = [110,110]
-    elif site_name == "site2":
-        site_pos = [715,500]
-        site_scale = [90,90]
-
-    radius = ((int(area(site_pos[0],site_scale[0])[1])-5)-(int(area(site_pos[0],site_scale[0])[0])+5))/2
-    site_size = np.pi * radius * radius
-    return site_pos, site_size, radius

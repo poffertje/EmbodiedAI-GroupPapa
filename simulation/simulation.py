@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pygame
 import scipy
+import random
 import os
 from scipy.interpolate import make_interp_spline, BSpline
 
@@ -163,25 +164,23 @@ class Simulation:
         """
         # initialize the environment and agent/obstacle positions
         self.initialize()
+        obstacle_scale = [100,100]
+        obstacle_loc = [500,500]
+        obstacle_filename = "experiments/covid/images/lockdown-border.png"
 
         if self.iter == float("inf"):
             while self.running:
                 init = time.time()
+                # if len(self.swarm.objects.obstacles) < 4:
+                #     self.swarm.objects.add_object(
+                #         file=obstacle_filename, pos=[random.randint(100,900),random.randint(100,900)],
+                #         scale=[random.randint(50,200),random.randint(50,200)], obj_type="obstacle"
+                #     )
                 self.simulate()
             self.plot_simulation()
         else:
             for i in range(self.iter):
                 self.simulate()
-                # if i == 100:
-                #     self.make_screenshot(i)
-                # elif i == 2000:
-                #     self.make_screenshot(i)
-                # elif i == 4000:
-                #     self.make_screenshot(i)
-                # elif i == 8000:
-                #     self.make_screenshot(i)
-                # elif i == 12000:
-                #     self.make_screenshot(i)
 
     def make_screenshot(self, index):
         # Get the path to the current folder
