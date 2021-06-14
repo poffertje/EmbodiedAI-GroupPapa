@@ -164,18 +164,29 @@ class Simulation:
         """
         # initialize the environment and agent/obstacle positions
         self.initialize()
-        obstacle_scale = [100,100]
+        obstacle_scale = [1000,1000]
         obstacle_loc = [500,500]
-        obstacle_filename = "experiments/covid/images/lockdown-border.png"
+        obstacle_filename = "experiments/covid/images/Borders.png"
+        counter = 0
 
         if self.iter == float("inf"):
             while self.running:
+                counter += 1
                 init = time.time()
-                # if len(self.swarm.objects.obstacles) < 4:
-                #     self.swarm.objects.add_object(
-                #         file=obstacle_filename, pos=[random.randint(100,900),random.randint(100,900)],
-                #         scale=[random.randint(50,200),random.randint(50,200)], obj_type="obstacle"
-                #     )
+                if len(self.swarm.objects.obstacles) < 1:
+                    self.swarm.objects.add_object(
+                        file=obstacle_filename, pos=obstacle_loc,
+                        scale=obstacle_scale, obj_type="obstacle", index=0
+                    )
+                if counter % 100 == 0 and len(self.swarm.objects.obstacles) < 2:
+                    self.swarm.objects.add_object(file="experiments/covid/images/BordersClosed.png", pos=obstacle_loc,
+                        scale=obstacle_scale, obj_type="obstacle",index=1)
+                elif len(self.swarm.objects.obstacles) > 1:
+                    if np.random.choice([True, False], p=[0.1, 0.9]):
+                        for obstacle in self.swarm.objects.obstacles:
+                            if obstacle.index == 1:
+                                self.swarm.objects.obstacles.remove(obstacle)
+                print(len(self.swarm.objects.obstacles))
                 self.simulate()
             self.plot_simulation()
         else:

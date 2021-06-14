@@ -43,10 +43,15 @@ class Population(Swarm):
                         pass
 
             if index % 5 == 0:
+                resistance = 0.65
+                resistance = resistance * 0.75
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
                                       color=[255,69,0],timer=time.time(),
-                                      age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3])))
+                                      age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3]),
+                                      resistance=resistance))
             else:
+                resistance = 0.65
                 self.add_agent(Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                       color=[255,165,0],timer=None,
-                                      age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3])))
+                                      age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3]),
+                                      resistance=resistance))

@@ -184,6 +184,7 @@ class Agent(pygame.sprite.Sprite):  # super class
             wander_angle:
             wander_radius:
         """
+
         rands = 2 * np.random.rand() - 1
         cos = np.cos(self.wandering_angle)
         sin = np.sin(self.wandering_angle)

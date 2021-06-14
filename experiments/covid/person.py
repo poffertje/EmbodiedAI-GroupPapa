@@ -9,7 +9,7 @@ from simulation.utils import *
 class Person(Agent):
     """ """
     def __init__(
-            self, pos, v, flock, state, index: int, color, timer, age
+            self, pos, v, flock, state, index: int, color, timer, age, resistance
     ) -> None:
         super(Person, self).__init__(
             pos,
@@ -23,6 +23,7 @@ class Person(Agent):
             index=index,
             color=color,
         )
+        self.index = index
         self.state = state
         self.flock = flock
         self.timer = timer
@@ -33,6 +34,7 @@ class Person(Agent):
         self.in_lockdown = False
         self.age = age
         self.counter = 1
+        self.resistance = resistance
 
     def update_actions(self):
         # Obtain statistics of the current population
@@ -58,24 +60,14 @@ class Person(Agent):
 
         # if self.age <= 25:
         #     if self.state == "I":
-        #         Agent.remove_person(self,self)
+        #         self.check
 
-        neighbours = self.flock.find_neighbors(self, config["person"]["radius_view"])
+        # Check if agent will be infected and whether the agent will keep distance
+        self.infect_distancing
 
-        for neighbour in neighbours:
-
-            # social distancing
-            if dist(self.pos, neighbour.pos) <= config["person"]["radius_view"]:
-                self.v = [self.v[1]*-1, self.v[0]*-1]
-
-            # probability of getting infected
-            if neighbour.state == "I" and self.state == "S" and self.in_lockdown == neighbour.in_lockdown:
-                if np.random.choice([True, False], p=[0.1, 0.9]):
-                    Agent.set_color(self,[255,69,0])
-                    self.timer = time.time()
-                    self.state = "I"
-
+        # Used for the continue_walk function
         self.counter += 1
+
 
     def evaluate(self):
         if self.index == 0:
@@ -91,9 +83,26 @@ class Person(Agent):
 
     def check_recover(self):
         if self.timer != None:
-            if time.time() - self.timer >= 10 and self.state == "I":
-                Agent.set_color(self, [0, 255, 0])
-                self.state = "R"
+            if np.random.choice([True, False], p=[self.resistance, 1-self.resistance]):
+                if time.time() - self.timer >= 10 and self.state == "I":
+                    Agent.set_color(self, [0, 255, 0])
+                    self.state = "R"
+
+    def infect_distancing(self):
+        neighbours = self.flock.find_neighbors(self, config["person"]["radius_view"])
+
+        for neighbour in neighbours:
+
+            # social distancing
+            if dist(self.pos, neighbour.pos) <= config["person"]["radius_view"]:
+                self.v = [self.v[1]*-1, self.v[0]*-1]
+
+            # probability of getting infected
+            if neighbour.state == "I" and self.state == "S" and self.in_lockdown == neighbour.in_lockdown:
+                if np.random.choice([True, False], p=[0.1, 0.9]):
+                    Agent.set_color(self,[255,69,0])
+                    self.timer = time.time()
+                    self.state = "I"
 
     def stop(self):
         self.v = [0,0]
