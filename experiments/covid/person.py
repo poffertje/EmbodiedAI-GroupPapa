@@ -110,7 +110,7 @@ class Person(Agent):
             # social distancing
             if self.social_distancing == True:
                 if dist(self.pos, neighbour.pos) <= self.radius_view:
-                    self.v = [self.v[1] * -1, self.v[0] * -1]
+                    self.v = [neighbour.v[1], neighbour.v[0]]
 
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
