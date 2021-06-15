@@ -1,6 +1,6 @@
 [base]
 swarm_type = 'covid'
-n_agents = 50
+n_agents = 100
 
 [screen]
 frames = inf
@@ -14,8 +14,8 @@ obstacles = true
 radius_view = 30
 
 [agent]
-height    = 8
-width     = 10
+height    = 5
+width     = 5
 dt        = 0.2
 mass      = 20
 max_speed = 7.0

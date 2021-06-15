@@ -9,7 +9,7 @@ from simulation.utils import *
 class Person(Agent):
     """ """
     def __init__(
-            self, pos, v, flock, state, index: int, color, timer, age, resistance
+            self, pos, v, flock, state, index: int, color, timer, age, recovery_time
     ) -> None:
         super(Person, self).__init__(
             pos,
@@ -28,12 +28,12 @@ class Person(Agent):
         self.flock = flock
         self.timer = timer
         self.stop_timer = 0
+        self.recovery_time = recovery_time
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
         self.age = age
         self.counter = 1
-        self.resistance = resistance
 
     def update_actions(self):
         # Obtain statistics of the current population
@@ -51,12 +51,12 @@ class Person(Agent):
         if time.time() - self.stop_timer >= 2 and self.stop_timer != 0:
             self.continue_walk()
 
-        # Check if agent can be recovered after certain amount of time has passed
-        self.check_recover()
-
-        if self.age <= 25:
-            if self.state == "I":
-                self.flock.agents.remove(self)
+        # Check if agent will die
+        if self.timer is not None:
+            if ((self.counter+1) - self.timer) % 50 == 0:
+                self.check_death()
+            elif (self.counter - self.timer) == self.recovery_time:
+                self.recover()
 
         # Check if agent will be infected and whether the agent will keep distance
         self.infect_distancing()
@@ -69,13 +69,21 @@ class Person(Agent):
         if self.index == 0:
             for agent in self.flock.agents:
                 self.flock.datapoints.append(agent.state)
+            for i in range(0,config["base"]["n_agents"]-len(self.flock.agents)):
+                self.flock.datapoints.append("D")
 
-    def check_recover(self):
-        if self.timer != None:
-            if np.random.choice([True, False], p=[self.resistance, 1-self.resistance]):
-                if time.time() - self.timer >= 10 and self.state == "I":
-                    Agent.set_color(self, [0, 255, 0])
-                    self.state = "R"
+    def check_death(self):
+        a,h,k = 1.1,11.4,8.7
+        probability = ((a ** (self.age - h)) + k) / 10000
+        if np.random.choice([True, False], p=[probability, 1 - probability]):
+            self.die()
+        else:
+            pass
+
+    def recover(self):
+        Agent.set_color(self, [0, 255, 0])
+        self.state = "R"
+        self.timer = None
 
     def infect_distancing(self):
         neighbours = self.flock.find_neighbors(self, config["person"]["radius_view"])
@@ -90,8 +98,9 @@ class Person(Agent):
             if neighbour.state == "I" and self.state == "S":
                 if np.random.choice([True, False], p=[0.5,0.5]):
                     Agent.set_color(self,[255,69,0])
-                    self.timer = time.time()
+                    self.timer = self.counter
                     self.state = "I"
+                    self.recovery_time = random.randint(60,180)
 
     def stop(self):
         self.v = [0,0]
@@ -100,6 +109,9 @@ class Person(Agent):
     def continue_walk(self):
         self.v = self.set_velocity()
         self.stop_timer = 0
+
+    def die(self):
+        self.flock.agents.remove(self)
 
     def check_for_obstacles(self):
         # Avoid any obstacles in the environment
