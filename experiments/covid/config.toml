@@ -14,8 +14,8 @@ obstacles = true
 radius_view = 30
 
 [agent]
-height    = 5
-width     = 5
+height    = 8
+width     = 8
 dt        = 0.2
 mass      = 20
 max_speed = 7.0

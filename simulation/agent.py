@@ -160,8 +160,8 @@ class Agent(pygame.sprite.Sprite):  # super class
 
         self.angle = angle
 
-    def set_color(self,color):
-        self.image.fill(color)
+    def set_color(self,color, size=None):
+        self.image.fill(color,size)
 
     def set_velocity(self) -> List[int]:
         """Determines a "random" velocity based on a random angle and x and y random speed components"""

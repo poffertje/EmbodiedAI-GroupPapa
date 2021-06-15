@@ -9,7 +9,7 @@ import os
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenarios0
+from experiments.covid.scenarios import scenario3 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -169,12 +169,12 @@ class Simulation:
         self.initialize()
 
         # Set the scenario
-        scenario = scenarios0()
+        lockdown = scenarios()[0]
 
         if self.iter == float("inf"):
             while self.running:
                 init = time.time()
-                if scenario:
+                if lockdown:
                     self.check_closure()
                 self.simulate()
             self.plot_simulation()
@@ -200,7 +200,6 @@ class Simulation:
                 infected += 1
         if infected >= config["base"]["n_agents"]/2 and len(self.swarm.objects.obstacles) < 2:
             self.add_closure()
-
         elif infected < config["base"]["n_agents"]/2 and len(self.swarm.objects.obstacles) > 1:
             self.remove_closure()
 
