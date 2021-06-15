@@ -54,9 +54,9 @@ class Person(Agent):
         # Check if agent can be recovered after certain amount of time has passed
         self.check_recover()
 
-        # if self.age <= 25:
-        #     if self.state == "I":
-        #         self.check
+        if self.age <= 25:
+            if self.state == "I":
+                self.flock.agents.remove(self)
 
         # Check if agent will be infected and whether the agent will keep distance
         self.infect_distancing()
@@ -88,7 +88,7 @@ class Person(Agent):
 
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
-                if np.random.choice([True, False], p=[self.resistance,1-self.resistance]):
+                if np.random.choice([True, False], p=[0.5,0.5]):
                     Agent.set_color(self,[255,69,0])
                     self.timer = time.time()
                     self.state = "I"
