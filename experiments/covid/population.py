@@ -6,6 +6,7 @@ from experiments.covid.config import config
 from experiments.covid.person import Person
 from simulation.swarm import Swarm
 from simulation.utils import *
+from experiments.covid.scenarios import scenarios0
 
 
 class Population(Swarm):
@@ -13,7 +14,7 @@ class Population(Swarm):
 
     def __init__(self, screen_size) -> None:
         super(Population, self).__init__(screen_size)
-        # To do
+        self.scenario = scenarios0()
 
     def initialize(self, num_agents: int) -> None:
         """
@@ -24,6 +25,8 @@ class Population(Swarm):
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
+        if self.scenario:
+            self.add_lockdown()
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
@@ -55,3 +58,12 @@ class Population(Swarm):
                                       color=[255,165,0],timer=None,
                                       age=np.random.choice([random.randint(5,35), random.randint(36,75)], p=[0.7, 0.3]),
                                       resistance=resistance))
+
+    def add_lockdown(self):
+        obstacle_filename = "experiments/covid/images/Borders.png"
+        obstacle_loc = [500,500]
+        obstacle_scale = [1000,1000]
+        self.objects.add_object(
+            file=obstacle_filename, pos=obstacle_loc,
+            scale=obstacle_scale, obj_type="obstacle", index=0
+        )

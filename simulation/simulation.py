@@ -9,10 +9,12 @@ import os
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
+from experiments.covid.scenarios import scenarios0
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
 from experiments.flocking.flock import Flock
+from experiments.covid.config import config
 
 
 def _plot_covid(data) -> None:
@@ -164,29 +166,15 @@ class Simulation:
         """
         # initialize the environment and agent/obstacle positions
         self.initialize()
-        obstacle_scale = [1000,1000]
-        obstacle_loc = [500,500]
-        obstacle_filename = "experiments/covid/images/Borders.png"
-        counter = 0
+
+        # Set the scenario
+        scenario = scenarios0()
 
         if self.iter == float("inf"):
             while self.running:
-                counter += 1
                 init = time.time()
-                if len(self.swarm.objects.obstacles) < 1:
-                    self.swarm.objects.add_object(
-                        file=obstacle_filename, pos=obstacle_loc,
-                        scale=obstacle_scale, obj_type="obstacle", index=0
-                    )
-                if counter % 100 == 0 and len(self.swarm.objects.obstacles) < 2:
-                    self.swarm.objects.add_object(file="experiments/covid/images/BordersClosed.png", pos=obstacle_loc,
-                        scale=obstacle_scale, obj_type="obstacle",index=1)
-                elif len(self.swarm.objects.obstacles) > 1:
-                    if np.random.choice([True, False], p=[0.1, 0.9]):
-                        for obstacle in self.swarm.objects.obstacles:
-                            if obstacle.index == 1:
-                                self.swarm.objects.obstacles.remove(obstacle)
-                print(len(self.swarm.objects.obstacles))
+                if scenario:
+                    self.check_closure()
                 self.simulate()
             self.plot_simulation()
         else:
@@ -197,9 +185,30 @@ class Simulation:
         # Get the path to the current folder
         folder, _ = os.path.split(os.path.dirname(__file__))
         # Find a path to the screenshot folder
-        folder = os.path.join(folder, 'experiments/%s/screenshots' %self.swarm_type)
+        folder = os.path.join(folder, 'experiments/%s/screenshots' % self.swarm_type)
         # If the path does not exist yet, then create one
         if not os.path.exists(folder):
             os.makedirs(folder)
         # Save the screenshot as a png with the index corresponding to the frame index
         pygame.image.save(self.screen, os.path.join(folder, f'screenshot_30radius_100population{index:03d}.png'))
+
+    def check_closure(self):
+        infected = 0
+        for agent in self.swarm.agents:
+            if agent.state == "I":
+                infected += 1
+        if infected >= config["base"]["n_agents"]/2 and len(self.swarm.objects.obstacles) < 2:
+            self.add_closure()
+
+        elif infected < config["base"]["n_agents"]/2 and len(self.swarm.objects.obstacles) > 1:
+            self.remove_closure()
+
+
+    def add_closure(self):
+        self.swarm.objects.add_object(file="experiments/covid/images/BordersClosed.png", pos=[500, 500],
+                                      scale=[1000, 1000], obj_type="obstacle", index=1)
+
+    def remove_closure(self):
+        for obstacle in self.swarm.objects.obstacles:
+            if obstacle.index == 1:
+                self.swarm.objects.obstacles.remove(obstacle)

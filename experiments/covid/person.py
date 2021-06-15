@@ -31,7 +31,6 @@ class Person(Agent):
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
-        self.in_lockdown = False
         self.age = age
         self.counter = 1
         self.resistance = resistance
@@ -42,9 +41,6 @@ class Person(Agent):
 
         # Avoid obstacles
         self.check_for_obstacles()
-
-        # Assign agents to be part of lockdown based on their location
-        self.check_lockdown()
 
         # Random stopping of agents to have more natural behaviour
         if self.stop_timer == 0 and self.counter % 100 == 0:
@@ -63,7 +59,7 @@ class Person(Agent):
         #         self.check
 
         # Check if agent will be infected and whether the agent will keep distance
-        self.infect_distancing
+        self.infect_distancing()
 
         # Used for the continue_walk function
         self.counter += 1
@@ -73,13 +69,6 @@ class Person(Agent):
         if self.index == 0:
             for agent in self.flock.agents:
                 self.flock.datapoints.append(agent.state)
-
-    def check_lockdown(self):
-        for object in self.flock.objects.obstacles:
-            if self.pos[0] and self.pos[1] in range(int(area(object.pos[0],object.scale[0])[0]),int(area(object.pos[1],object.scale[1])[1])):
-                self.in_lockdown = True
-            else:
-                self.in_lockdown = False
 
     def check_recover(self):
         if self.timer != None:
@@ -98,8 +87,8 @@ class Person(Agent):
                 self.v = [self.v[1]*-1, self.v[0]*-1]
 
             # probability of getting infected
-            if neighbour.state == "I" and self.state == "S" and self.in_lockdown == neighbour.in_lockdown:
-                if np.random.choice([True, False], p=[0.1, 0.9]):
+            if neighbour.state == "I" and self.state == "S":
+                if np.random.choice([True, False], p=[self.resistance,1-self.resistance]):
                     Agent.set_color(self,[255,69,0])
                     self.timer = time.time()
                     self.state = "I"
