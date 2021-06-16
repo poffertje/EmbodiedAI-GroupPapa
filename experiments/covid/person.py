@@ -114,7 +114,8 @@ class Person(Agent):
 
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
-                if np.random.choice([True, False], p=[self.infection_probability, 1 - self.infection_probability]):
+                probability = (self.infection_probability + neighbour.infection_probability)/2
+                if np.random.choice([True, False], p=[probability, 1 - probability]):
                     if self.mask_on:
                         Agent.set_color(self, [255, 69, 0], (0, 0, 8, 4))
                     else:
