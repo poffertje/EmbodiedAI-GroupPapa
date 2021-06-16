@@ -12,7 +12,7 @@ def scenario1():
 
 def scenario2():
     lockdown = True
-    social_distancing_probability = 0.0
+    social_distancing_probability = 0.0 # original 0.2
     masked_proportion = 0.3
     name = "scenario2"
     lockdown_threshold = 0.1
@@ -22,7 +22,7 @@ def scenario2():
 
 def scenario3():
     lockdown = True
-    social_distancing_probability = 0.0
+    social_distancing_probability = 0.0 # original 0.8
     masked_proportion = 0.9
     name = "scenario3"
     lockdown_threshold = 0.05
@@ -31,7 +31,7 @@ def scenario3():
 
 def scenario4():
     lockdown = False
-    social_distancing_probability = 0.0
+    social_distancing_probability = 0.0 # original 0.8
     masked_proportion = 0.0
     name = "scenario4"
     lockdown_threshold = 0.0

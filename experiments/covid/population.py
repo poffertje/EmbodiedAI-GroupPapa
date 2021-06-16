@@ -37,20 +37,6 @@ class Population(Swarm):
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
 
-            #     if config["population"]["obstacles"]:  # you need to define this variable
-            #         for obj in self.objects.obstacles:
-            #             rel_coordinate = relative(
-            #                 coordinates, (obj.rect[0], obj.rect[1])
-            #             )
-            #             try:
-            #                 while obj.mask.get_at(rel_coordinate):
-            #                     coordinates = generate_coordinates(self.screen)
-            #                     rel_coordinate = relative(
-            #                         coordinates, (obj.rect[0], obj.rect[1])
-            #                     )
-            #             except IndexError:
-            #                 pass
-
             if masked_agents < config["base"]["n_agents"] * scenario()[2]:
                 masked = True
                 masked_agents += 1
@@ -99,12 +85,14 @@ class Population(Swarm):
             file=obstacle_filename, pos=obstacle_loc,
             scale=obstacle_scale, obj_type="obstacle", index=0
         )
+        self.objects.add_object(file="experiments/covid/images/airport.png", pos=[210,210],
+            scale=[150,150], obj_type="site", index=-1)
 
     def check_border_collision(self, person):
         for obj in self.objects.obstacles:
             while True:
                 if self.airport:
-                    if 120 <= person.pos[0] <= 330 and 120 <= person.pos[1] <= 330:
+                    while 120 <= person.pos[0] <= 330 and 120 <= person.pos[1] <= 330:
                         person.pos = np.array(generate_coordinates(self.screen))
 
                 collide = pygame.sprite.collide_mask(person, obj)

@@ -170,7 +170,7 @@ class Agent(pygame.sprite.Sprite):  # super class
             random.randrange(1, self.max_speed + 1) * plusminus(),
             random.randrange(1, self.max_speed + 1) * plusminus(),
         ]
-        velocity *= np.array([np.cos(angle), np.sin(angle)])
+        velocity *= np.array([np.cos(angle), np.sin(angle)],dtype=float)
         return velocity
 
     def wander(self, wander_dist, wander_radius, wander_angle) -> np.ndarray:
