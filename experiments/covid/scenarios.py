@@ -5,7 +5,9 @@ def scenario1():
     social_distancing_probability = 0.0
     masked_proportion = 0
     name = "scenario1"
-    return [lockdown, social_distancing_probability, masked_proportion, name]
+    lockdown_threshold = 0.0
+    airport = False
+    return [lockdown, social_distancing_probability, masked_proportion, name, airport]
 
 
 def scenario2():
@@ -14,7 +16,8 @@ def scenario2():
     masked_proportion = 0.3
     name = "scenario2"
     lockdown_threshold = 0.1
-    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold]
+    airport = False
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
 
 
 def scenario3():
@@ -23,4 +26,14 @@ def scenario3():
     masked_proportion = 0.9
     name = "scenario3"
     lockdown_threshold = 0.05
-    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold]
+    airport = False
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
+
+def scenario4():
+    lockdown = False
+    social_distancing_probability = 0.0
+    masked_proportion = 0.0
+    name = "scenario4"
+    lockdown_threshold = 0.0
+    airport = True
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]

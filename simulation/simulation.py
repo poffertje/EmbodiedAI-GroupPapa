@@ -9,7 +9,7 @@ import os
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario3 as scenarios
+from experiments.covid.scenarios import scenario4 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -172,6 +172,7 @@ class Simulation:
 
         # Set the scenario
         lockdown = scenarios()[0]
+        airport = scenarios()[5]
 
         if self.iter == float("inf"):
             while self.running:
