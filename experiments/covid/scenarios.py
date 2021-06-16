@@ -13,7 +13,8 @@ def scenario2():
     social_distancing_probability = 0.0
     masked_proportion = 0.3
     name = "scenario2"
-    return [lockdown, social_distancing_probability, masked_proportion, name]
+    lockdown_threshold = 0.1
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold]
 
 
 def scenario3():
@@ -21,4 +22,5 @@ def scenario3():
     social_distancing_probability = 0.0
     masked_proportion = 0.9
     name = "scenario3"
-    return [lockdown, social_distancing_probability, masked_proportion, name]
+    lockdown_threshold = 0.05
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold]

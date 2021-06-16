@@ -9,7 +9,7 @@ import os
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario1 as scenarios
+from experiments.covid.scenarios import scenario3 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -204,6 +204,7 @@ class Simulation:
 
     def check_closure(self):
         self.site_infection = [0, 0, 0, 0]
+        lockdown_threshold = scenarios()[4]
 
         for agent in self.swarm.agents:
             if agent.state == "I" and agent.pos[0] < 500 and agent.pos[1] < 500:
@@ -216,19 +217,19 @@ class Simulation:
                 self.site_infection[3] += 1
 
         if len(self.swarm.objects.obstacles) < 6:
-            if self.site_infection[0] >= config["base"]["n_agents"] * 0.1:
+            if self.site_infection[0] >= config["base"]["n_agents"] * lockdown_threshold:
                 border_file = "experiments/covid/images/Borders1.png"
                 self.closure_index = 1
                 self.add_closure(border_file, self.closure_index)
-            if self.site_infection[1] >= config["base"]["n_agents"] * 0.1:
+            if self.site_infection[1] >= config["base"]["n_agents"] * lockdown_threshold:
                 border_file = "experiments/covid/images/Borders2.png"
                 self.closure_index = 2
                 self.add_closure(border_file, self.closure_index)
-            if self.site_infection[2] >= config["base"]["n_agents"] * 0.1:
+            if self.site_infection[2] >= config["base"]["n_agents"] * lockdown_threshold:
                 border_file = "experiments/covid/images/Borders3.png"
                 self.closure_index = 3
                 self.add_closure(border_file, self.closure_index)
-            if self.site_infection[3] >= config["base"]["n_agents"] * 0.1:
+            if self.site_infection[3] >= config["base"]["n_agents"] * lockdown_threshold:
                 border_file = "experiments/covid/images/Borders4.png"
                 self.closure_index = 4
                 self.add_closure(border_file, self.closure_index)
