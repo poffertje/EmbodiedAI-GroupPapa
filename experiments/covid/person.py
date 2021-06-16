@@ -34,7 +34,7 @@ class Person(Agent):
         self.counter = 1
         self.radius_view = config["person"]["radius_view"]
         self.age = age
-        self.infection_probability = 0.5
+        self.infection_probability = 0.1 #changed
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
@@ -83,7 +83,7 @@ class Person(Agent):
     def wear_mask(self):
         self.mask_on = True
         Agent.set_color(self, [255, 255, 255], (0, 4, 8, 4))
-        self.infection_probability = 0.2
+        self.infection_probability = 0.01
 
     def take_mask_of(self):
         self.mask_on = False
@@ -115,7 +115,10 @@ class Person(Agent):
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
                 if np.random.choice([True, False], p=[self.infection_probability, 1 - self.infection_probability]):
-                    Agent.set_color(self, [255, 69, 0])
+                    if self.mask_on:
+                        Agent.set_color(self, [255, 69, 0], (0, 0, 8, 4))
+                    else:
+                        Agent.set_color(self, [255, 69, 0])
                     self.timer = self.counter
                     self.state = "I"
                     self.recovery_time = random.randint(1000, 1400)

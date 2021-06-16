@@ -56,7 +56,7 @@ def dist(a: np.ndarray, b: np.ndarray) -> float:
     return norm(a - b)
 
 
-def image_with_rect(filename: str, scale: Union[Mapping[int, Any], List[int]]) ->\
+def image_with_rect(filename: str, scale: Union[Mapping[int, Any], List[int]]) -> \
         Tuple[Union[pygame.Surface, pygame.SurfaceType], Union[pygame.Rect, Any]]:
     """
     Load the image that is going to represent the agent on the GUI
@@ -90,7 +90,7 @@ def plusminus() -> int:
     return 1 if (random.random() > 0.5) else -1
 
 
-def rotate(vector: np.ndarray, lower_angle: int=150, upper_angle: int=210) -> np.ndarray:
+def rotate(vector: np.ndarray, lower_angle: int = 150, upper_angle: int = 210) -> np.ndarray:
     """
     Randomly rotate the input vector
 
@@ -178,6 +178,7 @@ def relative(u: Union[np.ndarray, List[Union[float, int]]], v: Union[np.ndarray,
 
     """
     return [int(u[i]) - int(v[i]) for i in range(len(u))]
+
 
 def isInside(circle_x, circle_y, rad, x, y):
     """

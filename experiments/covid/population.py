@@ -23,7 +23,7 @@ class Population(Swarm):
 
         """
         # To Do
-        # code snipet (not complete) to avoid initializing agents on obstacles
+        # code snippet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
         if self.lockdown:
             self.add_lockdown()

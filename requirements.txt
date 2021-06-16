@@ -3,3 +3,4 @@ numpy==1.20.3
 pygame==2.0.1
 toml==0.10.2
 pdoc
+scipy
