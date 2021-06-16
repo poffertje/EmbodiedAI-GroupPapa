@@ -9,7 +9,7 @@ import os
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario3 as scenarios
+from experiments.covid.scenarios import scenario1 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -27,9 +27,15 @@ def _plot_covid(data) -> None:
         data:
 
     """
-    output_name = "experiments/covid/plots/Covid-19-SIR%s.png" % time.strftime(
-        "-%m.%d.%y-%H:%M", time.localtime()
-    )
+    folder, _ = os.path.split(os.path.dirname(__file__))
+
+    folder = os.path.join(folder, 'experiments/covid/plots')
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    output_name = folder + "/Covid-19-SIR-%s-%s.png" % (scenarios()[3], time.strftime("%H-%M-%S"))
+
     fig = plt.figure()
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
@@ -169,14 +175,21 @@ class Simulation:
 
         if self.iter == float("inf"):
             while self.running:
-                init = time.time()
+
                 if lockdown:
                     self.check_closure()
                 self.simulate()
+
             self.plot_simulation()
+
         else:
             for i in range(self.iter):
+
+                if lockdown:
+                    self.check_closure()
                 self.simulate()
+
+            self.plot_simulation()
 
     def make_screenshot(self, index):
         # Get the path to the current folder
