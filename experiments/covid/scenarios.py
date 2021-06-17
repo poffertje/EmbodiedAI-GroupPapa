@@ -52,10 +52,10 @@ def scenario5():
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport, quarantine_time]
 
 #Relaxed Policy
-def scenario5():
+def scenario6():
     lockdown = False
     social_distancing_probability = 0.0 # original 0.8
-    masked_proportion = 0.3
+    masked_proportion = 0.0
     name = "scenario4"
     lockdown_threshold = 0.0
     airport = True
