@@ -10,7 +10,7 @@ from simulation.utils import *
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario2 as scenarios
+from experiments.covid.scenarios import scenario5 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -276,15 +276,20 @@ class Simulation:
                 pass
 
     def spawn_tourists(self):
+        number_infected = 0
         for i in range(10):
             coordinates_x = randrange(125, 295)
             coordinates_y = randrange(125, 295)
             coordinates = [coordinates_x, coordinates_y]
-            state = np.random.choice(["S", "I"], p=[0.8, 0.2])
-            if state == "S":
-                color = [255, 165, 0]
-            elif state == "I":
+
+            if number_infected < 2:
+                number_infected += 1
+                state = "I"
                 color = [255, 69, 0]
+            else:
+                state = "S"
+                color = [255, 165, 0]
+
             self.swarm.add_agent(Person(pos=np.array(coordinates), v=None, flock=self.swarm, state=state,
                                         index=config["base"]["n_agents"] + i,
                                         color=color, timer=None,

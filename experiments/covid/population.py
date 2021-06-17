@@ -6,7 +6,7 @@ from experiments.covid.config import config
 from experiments.covid.person import Person
 from simulation.swarm import Swarm
 from simulation.utils import *
-from experiments.covid.scenarios import scenario2 as scenario
+from experiments.covid.scenarios import scenario5 as scenario
 
 
 class Population(Swarm):

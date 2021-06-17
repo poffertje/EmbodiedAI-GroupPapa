@@ -40,6 +40,8 @@ class Person(Agent):
         self.prev_v = None
         self.mask_on = mask_on
         self.social_distancing = social_distancing
+        self.previous_nr_of_agents = config["base"]["n_agents"]
+        self.population_size = config["base"]["n_agents"]
 
     def update_actions(self):
         # Obtain statistics of the current population
@@ -77,7 +79,14 @@ class Person(Agent):
         if self.index == 0:
             for agent in self.flock.agents:
                 self.flock.datapoints.append(agent.state)
-            for i in range(0, config["base"]["n_agents"] - len(self.flock.agents)):
+
+            current_nr_of_agents = len(self.flock.agents)
+            if self.previous_nr_of_agents < current_nr_of_agents:
+                self.population_size += 10
+
+            self.previous_nr_of_agents = current_nr_of_agents
+
+            for i in range(0, self.population_size - current_nr_of_agents):
                 self.flock.datapoints.append("D")
 
     def wear_mask(self):

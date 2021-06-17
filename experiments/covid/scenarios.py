@@ -8,7 +8,7 @@ def scenario1():
     name = "scenario1"
     lockdown_threshold = 0.0
     airport = False
-    return [lockdown, social_distancing_probability, masked_proportion, name, airport]
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
 
 #Four Cities: No lockdown, no masks
 def scenario2():
