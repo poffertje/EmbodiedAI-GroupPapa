@@ -3,7 +3,7 @@ swarm_type = 'covid'
 n_agents = 100
 
 [screen]
-frames = 600
+frames = 4000
 height = 1000
 width  = 1000
 

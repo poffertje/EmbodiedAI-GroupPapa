@@ -45,7 +45,7 @@ def scenario5():
     lockdown = False
     social_distancing_probability = 0.0 # original 0.8
     masked_proportion = 0.3
-    name = "scenario4"
+    name = "scenario5"
     lockdown_threshold = 0.0
     airport = True
     quarantine_time = 500
@@ -56,7 +56,7 @@ def scenario6():
     lockdown = False
     social_distancing_probability = 0.0 # original 0.8
     masked_proportion = 0.0
-    name = "scenario4"
+    name = "scenario6"
     lockdown_threshold = 0.0
     airport = True
     quarantine_time = 100
