@@ -29,11 +29,35 @@ def scenario3():
     airport = False
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
 
+#Strict Policy e.g. Singapore
 def scenario4():
     lockdown = False
     social_distancing_probability = 0.0 # original 0.8
-    masked_proportion = 0.0
+    masked_proportion = 0.9
     name = "scenario4"
     lockdown_threshold = 0.0
     airport = True
-    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
+    quarantine_time = 1400
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport, quarantine_time]
+
+#Semi-enforced Policy e.g. Netherlands
+def scenario5():
+    lockdown = False
+    social_distancing_probability = 0.0 # original 0.8
+    masked_proportion = 0.3
+    name = "scenario4"
+    lockdown_threshold = 0.0
+    airport = True
+    quarantine_time = 500
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport, quarantine_time]
+
+#Relaxed Policy
+def scenario5():
+    lockdown = False
+    social_distancing_probability = 0.0 # original 0.8
+    masked_proportion = 0.3
+    name = "scenario4"
+    lockdown_threshold = 0.0
+    airport = True
+    quarantine_time = 100
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport, quarantine_time]

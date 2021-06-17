@@ -193,7 +193,7 @@ class Simulation:
                 if i >= self.iter/2 and airport:
                     if i == self.iter/2:
                         self.spawn_tourists()
-                    elif i == self.iter * 0.75:
+                    elif i == scenarios()[6]:
                         self.remove_closure(0)
                         self.swarm.objects.add_object(file="experiments/covid/images/BordersAirportOpen.png", pos=[500, 500],
                                                       scale=[1000, 1000], obj_type="obstacle", index=0)
