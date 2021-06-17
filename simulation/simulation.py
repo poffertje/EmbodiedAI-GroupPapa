@@ -10,7 +10,7 @@ from simulation.utils import *
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario4 as scenarios
+from experiments.covid.scenarios import scenario2 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population

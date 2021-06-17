@@ -3,7 +3,7 @@ swarm_type = 'covid'
 n_agents = 100
 
 [screen]
-frames = 4000
+frames = 3000
 height = 1000
 width  = 1000
 
@@ -11,7 +11,7 @@ width  = 1000
 obstacles = true
 
 [person]
-radius_view = 30
+radius_view = 20
 
 [agent]
 height    = 8
