@@ -11,7 +11,8 @@ class Person(Agent):
     """ """
 
     def __init__(
-            self, pos, v, flock, state, index: int, color, timer, age, recovery_time, social_distancing, mask_on
+            self, pos, v, flock, state, index: int, color, timer, age, recovery_time, social_distancing, mask_on,
+            infection_probability
     ) -> None:
         super(Person, self).__init__(
             pos,
@@ -34,7 +35,7 @@ class Person(Agent):
         self.counter = 1
         self.radius_view = config["person"]["radius_view"]
         self.age = age
-        self.infection_probability = 0.1 #changed
+        self.infection_probability = infection_probability  # changed
         self.avoided_obstacles: bool = False
         self.prev_pos = None
         self.prev_v = None
@@ -42,6 +43,7 @@ class Person(Agent):
         self.social_distancing = social_distancing
         self.previous_nr_of_agents = config["base"]["n_agents"]
         self.population_size = config["base"]["n_agents"]
+        self.airport_open = False
 
     def update_actions(self):
         # Obtain statistics of the current population
@@ -51,7 +53,7 @@ class Person(Agent):
         self.check_for_obstacles()
 
         # Random stopping of agents to have more natural behaviour
-        if self.stop_timer == 0 and self.counter % 100 == 0:
+        if self.stop_timer == 0 and self.counter % 100 == 0 and (self.v != [0.0]).all():
             if np.random.choice([True, False], p=[0.05, 0.95]):
                 self.stop()
 
@@ -66,14 +68,35 @@ class Person(Agent):
             elif (self.counter - self.timer) == self.recovery_time:
                 self.recover()
 
+        if self.index >= config["base"]["n_agents"]:
+
+            if 120 <= self.pos[0] <= 330 and 120 <= self.pos[1] <= 330:
+                inside = True
+            else:
+                inside = False
+
+            if self.infection_probability != 0.01 and not inside:
+                self.infection_probability = 0.01
+                self.v = self.set_velocity()
+
         # Check if agent will be infected and whether the agent will keep distance
         self.infect_distancing()
+
+        # Prevent agents from entering the airport by having a non-physical
+        if self.airport_open:
+            self.airport_control()
 
         if self.mask_on and self.counter == 1:
             self.wear_mask()
 
         # Used for the continue_walk function
         self.counter += 1
+
+    def airport_control(self):
+        if 115 <= self.pos[0] <= 330 and 330 <= self.pos[1] <= 340:
+            if self.v[1] < 0.0:
+                y_v = randrange(0, 1)
+                self.v[1] = y_v
 
     def evaluate(self):
         if self.index == 0:
@@ -92,7 +115,8 @@ class Person(Agent):
     def wear_mask(self):
         self.mask_on = True
         Agent.set_color(self, [255, 255, 255], (0, 4, 8, 4))
-        self.infection_probability = 0.01
+        if self.infection_probability != 0.0:
+            self.infection_probability = 0.01
 
     def take_mask_of(self):
         self.mask_on = False
@@ -117,13 +141,13 @@ class Person(Agent):
         for neighbour in neighbours:
 
             # social distancing
-            if self.social_distancing == True:
+            if self.social_distancing:
                 if dist(self.pos, neighbour.pos) <= self.radius_view:
                     self.v = [neighbour.v[1], neighbour.v[0]]
 
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
-                probability = (self.infection_probability + neighbour.infection_probability)/2
+                probability = (self.infection_probability + neighbour.infection_probability) / 2
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     if self.mask_on:
                         Agent.set_color(self, [255, 69, 0], (0, 0, 8, 4))

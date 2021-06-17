@@ -111,6 +111,7 @@ class Simulation:
         self.swarm_type = swarm_type
         self.site_infection = [0, 0, 0, 0]
         self.closure_index = 0
+        self.airport_open = False
 
         # swarm settings
         self.num_agents = num_agents
@@ -190,21 +191,40 @@ class Simulation:
 
                 if lockdown:
                     self.check_closure()
-                if i >= self.iter/2 and airport:
-                    if i == self.iter/2:
+                if i >= self.iter / 4 and airport:
+                    if i == self.iter / 4:
                         self.spawn_tourists()
-                    elif i == scenarios()[6]:
+                    elif i == self.iter / 4 + scenarios()[6]:
                         self.remove_closure(0)
-                        self.swarm.objects.add_object(file="experiments/covid/images/BordersAirportOpen.png", pos=[500, 500],
+                        self.swarm.objects.add_object(file="experiments/covid/images/BordersAirportOpen.png",
+                                                      pos=[500, 500],
                                                       scale=[1000, 1000], obj_type="obstacle", index=0)
-
+                        self.airport_open = True
                         for agent in self.swarm.agents:
-                            if agent.index > config["base"]["n_agents"]:
-                                agent.v = [0.0,1.0]
+                            agent.airport_open = True
+                            if agent.index >= config["base"]["n_agents"]:
+                                agent.v = [0.0, 1.0]
+                    elif i >= self.iter / 4 + scenarios()[6]:
+                        if self.airport_open == True:
+                            self.check_airport_occupation()
 
                 self.simulate()
 
             self.plot_simulation()
+
+    def check_airport_occupation(self):
+        airport_citizens = 0
+        for agent in self.swarm.agents:
+            if 125 <= agent.pos[0] <= 295 and 125 <= agent.pos[1] <= 315:
+                airport_citizens += 1
+        if airport_citizens == 0:
+            self.remove_closure(0)
+            self.swarm.objects.add_object(file="experiments/covid/images/BordersAirport.png",
+                                          pos=[500, 500],
+                                          scale=[1000, 1000], obj_type="obstacle", index=0)
+            for agent in self.swarm.agents:
+                agent.airport_open = False
+            self.airport_open = False
 
     def make_screenshot(self, index):
         # Get the path to the current folder
@@ -290,13 +310,14 @@ class Simulation:
                 state = "S"
                 color = [255, 165, 0]
 
-            self.swarm.add_agent(Person(pos=np.array(coordinates), v=None, flock=self.swarm, state=state,
-                                        index=config["base"]["n_agents"] + i,
-                                        color=color, timer=None,
-                                        age=np.random.choice(
-                                            [random.randint(1, 25), random.randint(26, 64), random.randint(65, 90)]
-                                            , p=[0.28, 0.52, 0.20]),
-                                        recovery_time=None,
-                                        social_distancing=np.random.choice([True, False],
-                                                                           p=[scenarios()[1], 1 - scenarios()[1]]),
-                                        mask_on=True))
+            self.swarm.add_agent(
+                Person(pos=np.array(coordinates), v=np.array([0.0, 0.0]), flock=self.swarm, state=state,
+                       index=config["base"]["n_agents"] + i,
+                       color=color, timer=None,
+                       age=np.random.choice(
+                           [random.randint(1, 25), random.randint(26, 64), random.randint(65, 90)]
+                           , p=[0.28, 0.52, 0.20]),
+                       recovery_time=None,
+                       social_distancing=np.random.choice([True, False],
+                                                          p=[scenarios()[1], 1 - scenarios()[1]]),
+                       mask_on=True, infection_probability=0.0))

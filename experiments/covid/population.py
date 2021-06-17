@@ -53,7 +53,7 @@ class Population(Swarm):
                                         recovery_time=random.randint(1000, 1400),
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
-                                        mask_on=masked)
+                                        mask_on=masked, infection_probability=0.1)
             else:
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                         color=[255, 165, 0], timer=None,
@@ -63,7 +63,7 @@ class Population(Swarm):
                                         recovery_time=None,
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
-                                        mask_on=masked)
+                                        mask_on=masked, infection_probability=0.1)
             self.check_border_collision(current_person)
 
             self.add_agent(current_person)
@@ -85,8 +85,8 @@ class Population(Swarm):
             file=obstacle_filename, pos=obstacle_loc,
             scale=obstacle_scale, obj_type="obstacle", index=0
         )
-        self.objects.add_object(file="experiments/covid/images/airport.png", pos=[210,210],
-            scale=[150,150], obj_type="site", index=-1)
+        self.objects.add_object(file="experiments/covid/images/airport.png", pos=[210, 210],
+                                scale=[150, 150], obj_type="site", index=-1)
 
     def check_border_collision(self, person):
         for obj in self.objects.obstacles:
