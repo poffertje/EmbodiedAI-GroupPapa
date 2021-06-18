@@ -308,7 +308,7 @@ class Simulation:
                 state = "I"
                 color = [255, 69, 0]
                 timer = 1
-                recovery_timer = random.randint(1000, 1400),
+                recovery_timer = random.randint(1000, 1400)
             else:
                 state = "S"
                 color = [255, 165, 0]

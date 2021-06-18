@@ -69,7 +69,6 @@ class Person(Agent):
                 self.recover()
 
         if self.index >= config["base"]["n_agents"]:
-
             if 120 <= self.pos[0] <= 330 and 120 <= self.pos[1] <= 330:
                 inside = True
             else:
