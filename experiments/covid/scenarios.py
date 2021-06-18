@@ -65,7 +65,7 @@ def scenario6():
     name = "scenario6"
     lockdown_threshold = 0.0
     airport = True
-    quarantine_time = 500
+    quarantine_time = 1000
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
             quarantine_time]
 

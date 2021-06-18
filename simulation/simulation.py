@@ -10,7 +10,7 @@ from simulation.utils import *
 from scipy.interpolate import make_interp_spline, BSpline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario5 as scenarios
+from experiments.covid.scenarios import scenario6 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -42,6 +42,7 @@ def _plot_covid(data) -> None:
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
+    print("No. of Susceptible: ", data["S"][-1])
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
     plt.title("Covid-19 Simulation S-I-R")
     plt.xlabel("Time")
@@ -215,7 +216,7 @@ class Simulation:
     def check_airport_occupation(self):
         airport_citizens = 0
         for agent in self.swarm.agents:
-            if 125 <= agent.pos[0] <= 295 and 125 <= agent.pos[1] <= 315:
+            if 115 <= agent.pos[0] <= 300 and 125 <= agent.pos[1] <= 315:
                 airport_citizens += 1
         if airport_citizens == 0:
             self.remove_closure(0)
@@ -306,18 +307,23 @@ class Simulation:
                 number_infected += 1
                 state = "I"
                 color = [255, 69, 0]
+                timer = 1
+                recovery_timer = random.randint(1000, 1400),
             else:
                 state = "S"
                 color = [255, 165, 0]
+                timer = None
+                recovery_timer = None
+
 
             self.swarm.add_agent(
                 Person(pos=np.array(coordinates), v=np.array([0.0, 0.0]), flock=self.swarm, state=state,
                        index=config["base"]["n_agents"] + i,
-                       color=color, timer=None,
+                       color=color, timer=timer,
                        age=np.random.choice(
                            [random.randint(1, 25), random.randint(26, 64), random.randint(65, 90)]
                            , p=[0.28, 0.52, 0.20]),
-                       recovery_time=None,
+                       recovery_time=recovery_timer,
                        social_distancing=np.random.choice([True, False],
                                                           p=[scenarios()[1], 1 - scenarios()[1]]),
                        mask_on=True, infection_probability=0.0))
