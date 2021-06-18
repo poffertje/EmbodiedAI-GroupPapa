@@ -92,7 +92,7 @@ class Person(Agent):
         self.counter += 1
 
     def airport_control(self):
-        if 115 <= self.pos[0] <= 330 and 330 <= self.pos[1] <= 340:
+        if 110 <= self.pos[0] <= 330 and 330 <= self.pos[1] <= 340:
             if self.v[1] < 0.0:
                 y_v = randrange(0, 1)
                 self.v[1] = y_v

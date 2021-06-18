@@ -216,8 +216,9 @@ class Simulation:
     def check_airport_occupation(self):
         airport_citizens = 0
         for agent in self.swarm.agents:
-            if 115 <= agent.pos[0] <= 300 and 125 <= agent.pos[1] <= 315:
-                airport_citizens += 1
+            if agent.index >= config["base"]["n_agents"]:
+                if 120 <= agent.pos[0] <= 295 and 120 <= agent.pos[1] <= 315:
+                    airport_citizens += 1
         if airport_citizens == 0:
             self.remove_closure(0)
             self.swarm.objects.add_object(file="experiments/covid/images/BordersAirport.png",
