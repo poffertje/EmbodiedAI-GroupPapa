@@ -192,19 +192,16 @@ class Simulation:
         else:
             for i in range(self.iter):
                 self.released = 0
-
                 for agent in self.swarm.agents:
-                    if agent.state == "I" and not agent.hospitalized and np.random.choice([True,False],p=[0.5,0.5]):
+                    if agent.state == "I" and not agent.hospitalized and np.random.choice([True,False],p=[0.05,0.95]):
                         agent.hospital_check()
 
                     if agent.state == "R":
                         if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315:
                             self.released += 1
                         elif not(685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315) and agent.hospitalized:
-                            if agent.v[1] < 0.0:
-                                y_v = randrange(0, 1)
-                                agent.v[1] = y_v
                             agent.hospitalized = False
+                            self.swarm.vacant_beds[agent.bed_nr] = True
                             self.swarm.hospitalization -=1
 
                 self.check_hospital_occupation()

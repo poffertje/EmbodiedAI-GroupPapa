@@ -46,6 +46,7 @@ class Person(Agent):
         self.airport_open = False
         self.hospital_open = False
         self.hospitalized = False
+        self.bed_nr = None
 
     def update_actions(self):
         # Obtain statistics of the current population
@@ -55,7 +56,7 @@ class Person(Agent):
         self.check_for_obstacles()
 
         # Random stopping of agents to have more natural behaviour
-        if self.stop_timer == 0 and self.counter % 100 == 0 and (self.v != [0.0]).all() and not self.hospitalized:
+        if self.stop_timer == 0 and self.counter % 100 == 0 and self.v[0] != 0.0 and self.v[1] != 0.0  and not self.hospitalized:
             if np.random.choice([True, False], p=[0.05, 0.95]):
                 self.stop()
 
@@ -98,13 +99,13 @@ class Person(Agent):
         self.counter += 1
 
     def airport_control(self):
-        if 110 <= self.pos[0] <= 330 and 330 <= self.pos[1] <= 340:
+        if 110 <= self.pos[0] <= 330 and 315 <= self.pos[1] <= 340:
             if self.v[1] < 0.0:
                 y_v = randrange(0, 1)
                 self.v[1] = y_v
 
     def hospital_control(self):
-        if 675 <= self.pos[0] <= 905 and 320 <= self.pos[1] <= 340:
+        if 675 <= self.pos[0] <= 905 and 315 <= self.pos[1] <= 340:
             if self.v[1] < 0.0:
                 y_v = randrange(0, 1)
                 self.v[1] = y_v
@@ -131,33 +132,52 @@ class Person(Agent):
 
     def take_mask_of(self):
         self.mask_on = False
-        Agent.set_color(self, (255,69,0))
+        Agent.set_color(self, (255, 69, 0))
 
     def hospital_check(self):
-        i = self.flock.hospitalization
-        if i < 12:
+        if any(self.flock.vacant_beds.values()):
+            vacant_beds = [k for k, v in self.flock.vacant_beds.items() if v == True]
+            i = random.choice(vacant_beds)
+            if i == 1 or i == 5 or i == 9:
+                if i == 1:
+                    self.pos = np.array([730.0, 155.0])
+                elif i == 5:
+                    self.pos = np.array([730.0, 210.0])
+                elif i == 9:
+                    self.pos = np.array([730.0, 265.0])
+            elif i == 2 or i == 6 or i == 10:
+                addition = 40
+                if i == 2:
+                    self.pos = np.array([730.0 + addition, 155.0])
+                elif i == 6:
+                    self.pos = np.array([730.0 + addition, 210.0])
+                elif i == 10:
+                    self.pos = np.array([730.0 + addition, 265.0])
 
-            index = (i % 4 - 1)
-            if index == -1:
+            elif i == 3 or i == 7 or i == 11:
+                addition = 80
+                if i == 3:
+                    self.pos = np.array([730.0 + addition, 155.0])
+                elif i == 7:
+                    self.pos = np.array([730.0 + addition, 210.0])
+                elif i == 11:
+                    self.pos = np.array([730.0 + addition, 265.0])
+
+            elif i == 4 or i == 8 or i == 12:
                 addition = 120
-            else:
-                addition = index * 40
+                if i == 4:
+                    self.pos = np.array([730.0 + addition, 155.0])
+                elif i == 8:
+                    self.pos = np.array([730.0 + addition, 210.0])
+                elif i == 12:
+                    self.pos = np.array([730.0 + addition, 265.0])
 
-            if i < 4:
-                self.pos = np.array([730.0 + addition, 155.0])
-
-            elif i >= 4 and i < 8:
-                self.pos = np.array([730.0 + addition, 210.0])
-
-            elif i >= 8 and i < 12:
-                self.pos = np.array([730.0 + addition, 265.0])
-
+            self.bed_nr = i
             self.flock.hospitalization += 1
             self.hospitalized = True
-            self.v = [0.0,0.0]
+            self.v = [0.,0.]
             self.take_mask_of()
-        else:
-            pass
+            self.flock.vacant_beds[i] = False
 
     def check_death(self):
         a, h, k = 1.1, 11.4, 8.7
@@ -165,6 +185,7 @@ class Person(Agent):
         if np.random.choice([True, False], p=[probability, 1 - probability]):
             if self.hospitalized:
                 self.flock.hospitalization -= 1
+                self.flock.vacant_beds[self.bed_nr] = True
             self.die()
         else:
             pass
@@ -174,8 +195,7 @@ class Person(Agent):
         self.state = "R"
         self.timer = None
         if self.hospitalized:
-            self.v = [0.0,1.0]
-
+            self.v = [0.0, 1.0]
 
     def infect_distancing(self):
         neighbours = self.flock.find_neighbors(self, self.radius_view)
