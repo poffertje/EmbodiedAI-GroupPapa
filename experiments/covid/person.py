@@ -55,6 +55,10 @@ class Person(Agent):
         # Avoid obstacles
         self.check_for_obstacles()
 
+        # Make sure that hospitalized agents remain in their bed
+        if self.hospitalized and self.state == "I":
+            self.v = [0.0,0.0]
+
         # Random stopping of agents to have more natural behaviour
         if self.stop_timer == 0 and self.counter % 100 == 0 and self.v[0] != 0.0 and self.v[1] != 0.0  and not self.hospitalized:
             if np.random.choice([True, False], p=[0.05, 0.95]):
@@ -171,11 +175,10 @@ class Person(Agent):
                     self.pos = np.array([730.0 + addition, 210.0])
                 elif i == 12:
                     self.pos = np.array([730.0 + addition, 265.0])
-
+            self.v = [0.,0.]
             self.bed_nr = i
             self.flock.hospitalization += 1
             self.hospitalized = True
-            self.v = [0.,0.]
             self.take_mask_of()
             self.flock.vacant_beds[i] = False
 
@@ -194,6 +197,8 @@ class Person(Agent):
         Agent.set_color(self, [0, 255, 0])
         self.state = "R"
         self.timer = None
+        if self.mask_on:
+            self.mask_on = False
         if self.hospitalized:
             self.v = [0.0, 1.0]
 

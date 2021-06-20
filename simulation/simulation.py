@@ -197,10 +197,13 @@ class Simulation:
                         agent.hospital_check()
 
                     if agent.state == "R":
-                        if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315:
+                        if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315 and agent.hospitalized:
                             self.released += 1
-                        elif not(685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315) and agent.hospitalized:
+                        elif not(685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 320) and agent.hospitalized:
                             agent.hospitalized = False
+                            x = randrange(-1,1)
+                            y = randrange(0,1)
+                            agent.v = [x,y]
                             self.swarm.vacant_beds[agent.bed_nr] = True
                             self.swarm.hospitalization -=1
 
