@@ -40,6 +40,7 @@ class Swarm(pygame.sprite.Sprite):
         self.objects: Objects = Objects()
         self.points_to_plot = plot
         self.datapoints: list = []
+        self.hospitalization = 0
 
     def add_agent(self, agent: Agent) -> None:
         """

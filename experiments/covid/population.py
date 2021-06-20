@@ -32,6 +32,8 @@ class Population(Swarm):
         if self.airport:
             self.add_airport()
 
+        self.add_hospital()
+
         masked_agents = 0
 
         for index, agent in enumerate(range(num_agents)):
@@ -65,7 +67,6 @@ class Population(Swarm):
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=0.1)
             self.check_border_collision(current_person)
-
             self.add_agent(current_person)
 
     def add_lockdown(self):
@@ -76,6 +77,49 @@ class Population(Swarm):
             file=obstacle_filename, pos=obstacle_loc,
             scale=obstacle_scale, obj_type="obstacle", index=0
         )
+
+    def add_hospital(self):
+        logo_filename = "experiments/covid/images/Pharmacy.png"
+
+        bed_filename = "experiments/covid/images/Bed.png"
+        hospital_filename = "experiments/covid/images/HospitalClosed.png"
+        hospital_loc = [500, 500]
+        hospital_scale = [1000, 1000]
+
+        self.objects.add_object(
+            file=hospital_filename, pos=hospital_loc,
+            scale=hospital_scale, obj_type="obstacle", index=-14
+        )
+
+        self.objects.add_object(
+            file=logo_filename, pos=[790,105],
+            scale=[40,40], obj_type="site", index=-15)
+
+        addition = 0
+
+        for i in range(12):
+            if i < 4:
+                self.objects.add_object(
+                    file=bed_filename, pos=[730+addition,155],
+                    scale=[25,25], obj_type="site", index=-i-2
+                )
+                addition += 40
+            if i >=4 and i < 8:
+                if i == 4:
+                    addition = 0
+                self.objects.add_object(
+                    file=bed_filename, pos=[730+addition,210],
+                    scale=[25,25], obj_type="site", index=-i-2
+                )
+                addition += 40
+            if i >=8 and i < 12:
+                if i == 8:
+                    addition = 0
+                self.objects.add_object(
+                    file=bed_filename, pos=[730+addition,265],
+                    scale=[25,25], obj_type="site", index=-i-2
+                )
+                addition += 40
 
     def add_airport(self):
         obstacle_filename = "experiments/covid/images/BordersAirport.png"
@@ -92,7 +136,8 @@ class Population(Swarm):
         for obj in self.objects.obstacles:
             while True:
                 if self.airport:
-                    while 120 <= person.pos[0] <= 330 and 120 <= person.pos[1] <= 330:
+                    while 120 <= person.pos[0] <= 330 and 120 <= person.pos[1] <= 330 \
+                            or 685 <= person.pos[0] <= 895 and 105 <= person.pos[1] <= 315:
                         person.pos = np.array(generate_coordinates(self.screen))
 
                 collide = pygame.sprite.collide_mask(person, obj)

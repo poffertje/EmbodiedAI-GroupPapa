@@ -113,6 +113,8 @@ class Simulation:
         self.site_infection = [0, 0, 0, 0]
         self.closure_index = 0
         self.airport_open = False
+        self.hospital_open = False
+        self.released = 0
 
         # swarm settings
         self.num_agents = num_agents
@@ -189,9 +191,27 @@ class Simulation:
 
         else:
             for i in range(self.iter):
+                self.released = 0
+
+                for agent in self.swarm.agents:
+                    if agent.state == "I" and not agent.hospitalized and np.random.choice([True,False],p=[0.5,0.5]):
+                        agent.hospital_check()
+
+                    if agent.state == "R":
+                        if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315:
+                            self.released += 1
+                        elif not(685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315) and agent.hospitalized:
+                            if agent.v[1] < 0.0:
+                                y_v = randrange(0, 1)
+                                agent.v[1] = y_v
+                            agent.hospitalized = False
+                            self.swarm.hospitalization -=1
+
+                self.check_hospital_occupation()
 
                 if lockdown:
                     self.check_closure()
+
                 if i >= self.iter / 4 and airport:
                     if i == self.iter / 4:
                         self.spawn_tourists()
@@ -227,6 +247,21 @@ class Simulation:
             for agent in self.swarm.agents:
                 agent.airport_open = False
             self.airport_open = False
+
+    def check_hospital_occupation(self):
+        if self.released > 0:
+            self.remove_closure(-14)
+            self.add_closure("experiments/covid/images/HospitalOpen.png",-14)
+            self.hospital_open = True
+            for agent in self.swarm.agents:
+                agent.hospital_open = True
+        elif self.released == 0:
+            self.remove_closure(-14)
+            self.add_closure("experiments/covid/images/HospitalClosed.png",-14)
+            self.hospital_open = False
+            for agent in self.swarm.agents:
+                agent.hospital_open = False
+
 
     def make_screenshot(self, index):
         # Get the path to the current folder

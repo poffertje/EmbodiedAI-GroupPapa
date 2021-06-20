@@ -44,6 +44,8 @@ class Person(Agent):
         self.previous_nr_of_agents = config["base"]["n_agents"]
         self.population_size = config["base"]["n_agents"]
         self.airport_open = False
+        self.hospital_open = False
+        self.hospitalized = False
 
     def update_actions(self):
         # Obtain statistics of the current population
@@ -53,12 +55,12 @@ class Person(Agent):
         self.check_for_obstacles()
 
         # Random stopping of agents to have more natural behaviour
-        if self.stop_timer == 0 and self.counter % 100 == 0 and (self.v != [0.0]).all():
+        if self.stop_timer == 0 and self.counter % 100 == 0 and (self.v != [0.0]).all() and not self.hospitalized:
             if np.random.choice([True, False], p=[0.05, 0.95]):
                 self.stop()
 
         # Continue walking after an agent has stopped
-        if time.time() - self.stop_timer >= 2 and self.stop_timer != 0:
+        if time.time() - self.stop_timer >= 2 and self.stop_timer != 0 and not self.hospitalized:
             self.continue_walk()
 
         # Check if agent will die
@@ -81,7 +83,11 @@ class Person(Agent):
         # Check if agent will be infected and whether the agent will keep distance
         self.infect_distancing()
 
-        # Prevent agents from entering the airport by having a non-physical
+        # Prevent agents from entering the hospital by having a non-physical border
+        if self.hospital_open:
+            self.hospital_control()
+
+        # Prevent agents from entering the airport by having a non-physical border
         if self.airport_open:
             self.airport_control()
 
@@ -93,6 +99,12 @@ class Person(Agent):
 
     def airport_control(self):
         if 110 <= self.pos[0] <= 330 and 330 <= self.pos[1] <= 340:
+            if self.v[1] < 0.0:
+                y_v = randrange(0, 1)
+                self.v[1] = y_v
+
+    def hospital_control(self):
+        if 675 <= self.pos[0] <= 905 and 320 <= self.pos[1] <= 340:
             if self.v[1] < 0.0:
                 y_v = randrange(0, 1)
                 self.v[1] = y_v
@@ -119,12 +131,40 @@ class Person(Agent):
 
     def take_mask_of(self):
         self.mask_on = False
-        # TODO
+        Agent.set_color(self, (255,69,0))
+
+    def hospital_check(self):
+        i = self.flock.hospitalization
+        if i < 12:
+
+            index = (i % 4 - 1)
+            if index == -1:
+                addition = 120
+            else:
+                addition = index * 40
+
+            if i < 4:
+                self.pos = np.array([730.0 + addition, 155.0])
+
+            elif i >= 4 and i < 8:
+                self.pos = np.array([730.0 + addition, 210.0])
+
+            elif i >= 8 and i < 12:
+                self.pos = np.array([730.0 + addition, 265.0])
+
+            self.flock.hospitalization += 1
+            self.hospitalized = True
+            self.v = [0.0,0.0]
+            self.take_mask_of()
+        else:
+            pass
 
     def check_death(self):
         a, h, k = 1.1, 11.4, 8.7
         probability = ((a ** (self.age - h)) + k) / 10000
         if np.random.choice([True, False], p=[probability, 1 - probability]):
+            if self.hospitalized:
+                self.flock.hospitalization -= 1
             self.die()
         else:
             pass
@@ -133,6 +173,9 @@ class Person(Agent):
         Agent.set_color(self, [0, 255, 0])
         self.state = "R"
         self.timer = None
+        if self.hospitalized:
+            self.v = [0.0,1.0]
+
 
     def infect_distancing(self):
         neighbours = self.flock.find_neighbors(self, self.radius_view)
