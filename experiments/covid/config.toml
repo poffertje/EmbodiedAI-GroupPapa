@@ -2,7 +2,7 @@
 swarm_type = 'covid'
 n_agents = 150
 percentage_underlying = 0.31 # one + multiple
-percentage_sever = 0.31
+probability_sever = 0.31
 
 [screen]
 frames = 4000

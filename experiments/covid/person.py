@@ -6,6 +6,7 @@ from experiments.covid.config import config
 from simulation.agent import Agent
 from simulation.utils import *
 
+PR_SEVERE = config["base"]["percentage_underlying"]
 
 class Person(Agent):
     """ """
@@ -216,6 +217,10 @@ class Person(Agent):
 
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
+
+                if self.underlying_conditions:
+                    self.severe_case = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
+
                 probability = (self.infection_probability + neighbour.infection_probability) / 2
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     if self.mask_on:

@@ -193,7 +193,7 @@ class Simulation:
             for i in range(self.iter):
                 self.released = 0
                 for agent in self.swarm.agents:
-                    if agent.state == "I" and not agent.hospitalized and np.random.choice([True,False],p=[0.05,0.95]):
+                    if agent.state == "I" and agent.severe_case and not agent.hospitalized and np.random.choice([True,False], p=[0.05,0.95]):
                         agent.hospital_check()
 
                     if agent.state == "R":

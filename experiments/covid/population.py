@@ -8,6 +8,7 @@ from simulation.swarm import Swarm
 from simulation.utils import *
 from experiments.covid.scenarios import scenario6 as scenario
 
+PR_SEVERE = config["base"]["percentage_underlying"]
 
 class Population(Swarm):
     """Class that represents the Population for the Covid experiment. TODO"""
@@ -36,7 +37,6 @@ class Population(Swarm):
 
         masked_agents = 0
         underlying_conditions = 0
-        severe_cases = 0
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
@@ -55,11 +55,8 @@ class Population(Swarm):
             else:
                 conditions = False
 
-            if conditions and severe_cases < round(config["base"]["percentage_sever"] * config["base"]["n_agents"] * config["base"]["percentage_underlying"]):
-                severe = True
-                severe_cases += 1
-            else:
-                severe = False
+            if conditions:
+                severe = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
 
             if index % 5 == 0:
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
@@ -82,7 +79,7 @@ class Population(Swarm):
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=0.1, underlying_conditions=conditions,
-                                        severe_case=severe)
+                                        severe_case=False)
             self.check_border_collision(current_person)
             self.add_agent(current_person)
 
