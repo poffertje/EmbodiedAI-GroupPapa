@@ -41,7 +41,7 @@ class Swarm(pygame.sprite.Sprite):
         self.points_to_plot = plot
         self.datapoints: list = []
         self.hospitalization = 0
-        self.vacant_beds = {1:True,2:True,3:True,4:True,5:True,6:True,7:True,8:True,9:True,10:True,11:True,12:True}
+        self.vacant_beds = {1:True,2:True,3:True}
 
     def add_agent(self, agent: Agent) -> None:
         """

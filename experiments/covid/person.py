@@ -12,7 +12,7 @@ class Person(Agent):
 
     def __init__(
             self, pos, v, flock, state, index: int, color, timer, age, recovery_time, social_distancing, mask_on,
-            infection_probability
+            infection_probability, underlying_conditions, severe_case
     ) -> None:
         super(Person, self).__init__(
             pos,
@@ -47,6 +47,8 @@ class Person(Agent):
         self.hospital_open = False
         self.hospitalized = False
         self.bed_nr = None
+        self.underlying_conditions = underlying_conditions
+        self.severe_case = severe_case
 
     def update_actions(self):
         # Obtain statistics of the current population

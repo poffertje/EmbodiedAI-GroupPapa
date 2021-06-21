@@ -35,6 +35,8 @@ class Population(Swarm):
         self.add_hospital()
 
         masked_agents = 0
+        underlying_conditions = 0
+        severe_cases = 0
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
@@ -46,6 +48,19 @@ class Population(Swarm):
             else:
                 masked = False
 
+            if underlying_conditions < round(config["base"]["percentage_underlying"] * config["base"]["n_agents"]):
+                conditions = True
+                underlying_conditions += 1
+
+            else:
+                conditions = False
+
+            if conditions and severe_cases < round(config["base"]["percentage_sever"] * config["base"]["n_agents"] * config["base"]["percentage_underlying"]):
+                severe = True
+                severe_cases += 1
+            else:
+                severe = False
+
             if index % 5 == 0:
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
                                         color=[255, 69, 0], timer=1,
@@ -55,7 +70,8 @@ class Population(Swarm):
                                         recovery_time=random.randint(1000, 1400),
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
-                                        mask_on=masked, infection_probability=0.1)
+                                        mask_on=masked, infection_probability=0.1, underlying_conditions=conditions,
+                                        severe_case=severe)
             else:
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                         color=[255, 165, 0], timer=None,
@@ -65,7 +81,8 @@ class Population(Swarm):
                                         recovery_time=None,
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
-                                        mask_on=masked, infection_probability=0.1)
+                                        mask_on=masked, infection_probability=0.1, underlying_conditions=conditions,
+                                        severe_case=severe)
             self.check_border_collision(current_person)
             self.add_agent(current_person)
 
