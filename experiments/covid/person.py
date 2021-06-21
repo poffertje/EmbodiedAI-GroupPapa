@@ -121,6 +121,11 @@ class Person(Agent):
         if self.index == 0:
             for agent in self.flock.agents:
                 self.flock.datapoints.append(agent.state)
+                if agent.hospitalized:
+                    self.flock.datapoints.append("H")
+                if agent.severe_case:
+                    self.flock.datapoints.append("C")
+
 
             current_nr_of_agents = len(self.flock.agents)
             if self.previous_nr_of_agents < current_nr_of_agents:

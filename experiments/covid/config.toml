@@ -5,7 +5,7 @@ percentage_underlying = 0.31 # one + multiple
 probability_sever = 0.31
 
 [screen]
-frames = 4000
+frames = 1000
 height = 1000
 width  = 1000
 

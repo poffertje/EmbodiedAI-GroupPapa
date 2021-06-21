@@ -43,6 +43,8 @@ def _plot_covid(data) -> None:
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
     print("No. of Susceptible: ", data["S"][-1])
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
+    plt.plot(data["H"], label="Hospitalized", color="blue", linestyle='dashdot')  # Blue
+    plt.plot(data["C"], label="Severe", color="maroon", linestyle='dotted')  # Maroon
     plt.title("Covid-19 Simulation S-I-R")
     plt.xlabel("Time")
     plt.ylabel("Population")
