@@ -139,7 +139,10 @@ class Person(Agent):
 
     def take_mask_of(self):
         self.mask_on = False
-        Agent.set_color(self, (255, 69, 0))
+        infected_color = [256, 69, 0]
+        if self.severe_case:
+            infected_color = [128, 0, 0]
+        Agent.set_color(self, infected_color)
 
     def hospital_check(self):
         if any(self.flock.vacant_beds.values()):
@@ -217,19 +220,23 @@ class Person(Agent):
 
             # probability of getting infected
             if neighbour.state == "I" and self.state == "S":
-
+                infected_color = [255, 69, 0]
                 if self.underlying_conditions:
                     self.severe_case = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
+                    if self.severe_case:
+                        infected_color = [128, 0, 0]
+
+
 
                 probability = (self.infection_probability + neighbour.infection_probability) / 2
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     if self.mask_on:
-                        Agent.set_color(self, [255, 69, 0], (0, 0, 8, 4))
+                        Agent.set_color(self, infected_color, (0, 0, 8, 4))
                     else:
-                        Agent.set_color(self, [255, 69, 0])
+                        Agent.set_color(self, infected_color)
                     self.timer = self.counter
                     self.state = "I"
-                    self.recovery_time = random.randint(1000, 1400)
+                    self.recovery_time = np.random.randint(1000, 1400)
 
     def stop(self):
         self.v = [0, 0]

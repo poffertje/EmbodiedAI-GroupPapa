@@ -1,14 +1,13 @@
-import time
-import random
-import pygame
-
 from experiments.covid.config import config
 from experiments.covid.person import Person
-from simulation.swarm import Swarm
-from simulation.utils import *
 from experiments.covid.scenarios import scenario6 as scenario
+from simulation.swarm import Swarm
+from simulation.utils import generate_coordinates
+from pygame.sprite import collide_mask
+import numpy as np
 
 PR_SEVERE = config["base"]["percentage_underlying"]
+
 
 class Population(Swarm):
     """Class that represents the Population for the Covid experiment. TODO"""
@@ -37,6 +36,7 @@ class Population(Swarm):
 
         masked_agents = 0
         underlying_conditions = 0
+        infected_color = [255, 69, 0] # mildly infected are colored red
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
@@ -44,27 +44,28 @@ class Population(Swarm):
             if masked_agents < config["base"]["n_agents"] * scenario()[2]:
                 masked = True
                 masked_agents += 1
-
             else:
                 masked = False
 
             if underlying_conditions < round(config["base"]["percentage_underlying"] * config["base"]["n_agents"]):
                 conditions = True
                 underlying_conditions += 1
-
             else:
                 conditions = False
 
             if conditions:
                 severe = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
+                if severe:
+                    infected_color = [128, 0, 0] # severely infected are colored maroon
+
 
             if index % 5 == 0:
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
-                                        color=[255, 69, 0], timer=1,
-                                        age=np.random.choice([random.randint(1, 25), random.randint(26, 64),
-                                                              random.randint(65, 90)]
+                                        color=infected_color, timer=1,
+                                        age=np.random.choice([np.random.randint(1, 25), np.random.randint(26, 64),
+                                                              np.random.randint(65, 90)]
                                                              , p=[0.28, 0.52, 0.20]),
-                                        recovery_time=random.randint(1000, 1400),
+                                        recovery_time=np.random.randint(1000, 1400),
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=0.1, underlying_conditions=conditions,
@@ -73,7 +74,8 @@ class Population(Swarm):
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                         color=[255, 165, 0], timer=None,
                                         age=np.random.choice(
-                                            [random.randint(1, 25), random.randint(26, 64), random.randint(65, 90)]
+                                            [np.random.randint(1, 25), np.random.randint(26, 64),
+                                             np.random.randint(65, 90)]
                                             , p=[0.28, 0.52, 0.20]),
                                         recovery_time=None,
                                         social_distancing=np.random.choice([True, False],
@@ -106,32 +108,32 @@ class Population(Swarm):
         )
 
         self.objects.add_object(
-            file=logo_filename, pos=[790,105],
-            scale=[40,40], obj_type="site", index=-15)
+            file=logo_filename, pos=[790, 105],
+            scale=[40, 40], obj_type="site", index=-15)
 
         addition = 0
 
         for i in range(12):
             if i < 4:
                 self.objects.add_object(
-                    file=bed_filename, pos=[730+addition,155],
-                    scale=[25,25], obj_type="site", index=-i-2
+                    file=bed_filename, pos=[730 + addition, 155],
+                    scale=[25, 25], obj_type="site", index=-i - 2
                 )
                 addition += 40
-            if i >=4 and i < 8:
+            if i >= 4 and i < 8:
                 if i == 4:
                     addition = 0
                 self.objects.add_object(
-                    file=bed_filename, pos=[730+addition,210],
-                    scale=[25,25], obj_type="site", index=-i-2
+                    file=bed_filename, pos=[730 + addition, 210],
+                    scale=[25, 25], obj_type="site", index=-i - 2
                 )
                 addition += 40
-            if i >=8 and i < 12:
+            if i >= 8 and i < 12:
                 if i == 8:
                     addition = 0
                 self.objects.add_object(
-                    file=bed_filename, pos=[730+addition,265],
-                    scale=[25,25], obj_type="site", index=-i-2
+                    file=bed_filename, pos=[730 + addition, 265],
+                    scale=[25, 25], obj_type="site", index=-i - 2
                 )
                 addition += 40
 
@@ -154,7 +156,7 @@ class Population(Swarm):
                             or 685 <= person.pos[0] <= 895 and 105 <= person.pos[1] <= 315:
                         person.pos = np.array(generate_coordinates(self.screen))
 
-                collide = pygame.sprite.collide_mask(person, obj)
+                collide = collide_mask(person, obj)
                 if collide is not None:
                     person.pos = np.array(generate_coordinates(self.screen))
                 else:

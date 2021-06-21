@@ -1,13 +1,12 @@
-import sys
-import time
-import numpy as np
 import matplotlib.pyplot as plt
-import pygame
-import scipy
-import random
 import os
-from simulation.utils import *
-from scipy.interpolate import make_interp_spline, BSpline
+import pygame
+import numpy as np
+
+from sys import exit
+from time import strftime
+from simulation.utils import randrange
+from scipy.interpolate import make_interp_spline
 
 from typing import Union, Tuple
 from experiments.covid.scenarios import scenario6 as scenarios
@@ -36,7 +35,7 @@ def _plot_covid(data) -> None:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    output_name = folder + "/Covid-19-SIR-%s-%s.png" % (scenarios()[3], time.strftime("%H-%M-%S"))
+    output_name = folder + "/Covid-19-SIR-%s-%s.png" % (scenarios()[3], strftime("%H-%M-%S"))
 
     fig = plt.figure()
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
@@ -65,9 +64,9 @@ def _plot_aggregation(data1, data2, data3) -> None:
     y1 = data1
     y2 = data2
     y3 = data3  # wandering agents
-    a_BSpline = scipy.interpolate.make_interp_spline(x1, y1)
-    b_BSpline = scipy.interpolate.make_interp_spline(x1, y2)
-    c_BSpline = scipy.interpolate.make_interp_spline(x1, y3)
+    a_BSpline = make_interp_spline(x1, y1)
+    b_BSpline = make_interp_spline(x1, y2)
+    c_BSpline = make_interp_spline(x1, y3)
     y1_new = a_BSpline(x_new)
     y2_new = b_BSpline(x_new)
     y3_new = c_BSpline(x_new)
@@ -129,7 +128,7 @@ class Simulation:
 
         else:
             print("None of the possible swarms selected")
-            sys.exit()
+            exit()
 
         # update
         self.to_update = pygame.sprite.Group()
@@ -138,6 +137,7 @@ class Simulation:
 
     def plot_simulation(self, data1=None, data2=None, data3=None) -> None:
         """Depending on the type of experiment, plots the final data accordingly"""
+
         if self.swarm_type == "covid":
             _plot_covid(self.swarm.points_to_plot)
 
@@ -155,6 +155,7 @@ class Simulation:
 
     def simulate(self) -> None:
         """Here each frame is computed and displayed"""
+
         self.screen.fill(self.sim_background)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -182,30 +183,29 @@ class Simulation:
 
         if self.iter == float("inf"):
             while self.running:
-
                 if lockdown:
                     self.check_closure()
                 self.simulate()
-
             self.plot_simulation()
 
         else:
             for i in range(self.iter):
                 self.released = 0
                 for agent in self.swarm.agents:
-                    if agent.state == "I" and agent.severe_case and not agent.hospitalized and np.random.choice([True,False], p=[0.05,0.95]):
+                    if agent.state == "I" and agent.severe_case == True and not agent.hospitalized and np.random.choice(
+                            [True, False], p=[0.05, 0.95]):
                         agent.hospital_check()
 
                     if agent.state == "R":
                         if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315 and agent.hospitalized:
                             self.released += 1
-                        elif not(685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 320) and agent.hospitalized:
+                        elif not (685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 320) and agent.hospitalized:
                             agent.hospitalized = False
-                            x = randrange(-1,1)
-                            y = randrange(0,1)
-                            agent.v = [x,y]
+                            x = randrange(-1, 1)
+                            y = randrange(0, 1)
+                            agent.v = [x, y]
                             self.swarm.vacant_beds[agent.bed_nr] = True
-                            self.swarm.hospitalization -=1
+                            self.swarm.hospitalization -= 1
 
                 self.check_hospital_occupation()
 
@@ -251,17 +251,16 @@ class Simulation:
     def check_hospital_occupation(self):
         if self.released > 0:
             self.remove_closure(-14)
-            self.add_closure("experiments/covid/images/HospitalOpen.png",-14)
+            self.add_closure("experiments/covid/images/HospitalOpen.png", -14)
             self.hospital_open = True
             for agent in self.swarm.agents:
                 agent.hospital_open = True
         elif self.released == 0:
             self.remove_closure(-14)
-            self.add_closure("experiments/covid/images/HospitalClosed.png",-14)
+            self.add_closure("experiments/covid/images/HospitalClosed.png", -14)
             self.hospital_open = False
             for agent in self.swarm.agents:
                 agent.hospital_open = False
-
 
     def make_screenshot(self, index):
         # Get the path to the current folder
@@ -344,22 +343,22 @@ class Simulation:
                 state = "I"
                 color = [255, 69, 0]
                 timer = 1
-                recovery_timer = random.randint(1000, 1400)
+                recovery_timer = np.random.randint(1000, 1400)
             else:
                 state = "S"
                 color = [255, 165, 0]
                 timer = None
                 recovery_timer = None
 
-
             self.swarm.add_agent(
                 Person(pos=np.array(coordinates), v=np.array([0.0, 0.0]), flock=self.swarm, state=state,
                        index=config["base"]["n_agents"] + i,
                        color=color, timer=timer,
                        age=np.random.choice(
-                           [random.randint(1, 25), random.randint(26, 64), random.randint(65, 90)]
+                           [np.random.randint(1, 25), np.random.randint(26, 64), np.random.randint(65, 90)]
                            , p=[0.28, 0.52, 0.20]),
                        recovery_time=recovery_timer,
                        social_distancing=np.random.choice([True, False],
                                                           p=[scenarios()[1], 1 - scenarios()[1]]),
-                       mask_on=True, infection_probability=0.0))
+                       mask_on=True, infection_probability=0.0, underlying_conditions=None,
+                                        severe_case=None))
