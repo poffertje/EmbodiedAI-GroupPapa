@@ -225,6 +225,7 @@ class Person(Agent):
                     self.severe_case = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
                     if self.severe_case:
                         infected_color = [128, 0, 0]
+                        self.infection_probability = np.random.uniform(0.5, 0.6)
 
 
 

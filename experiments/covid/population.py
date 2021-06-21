@@ -37,6 +37,7 @@ class Population(Swarm):
         masked_agents = 0
         underlying_conditions = 0
         infected_color = [255, 69, 0] # mildly infected are colored red
+        infection_probability = 0.1
 
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
@@ -57,6 +58,7 @@ class Population(Swarm):
                 severe = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
                 if severe:
                     infected_color = [128, 0, 0] # severely infected are colored maroon
+                    infection_probability = np.random.uniform(0.5, 0.6)
 
 
             if index % 5 == 0:
@@ -68,7 +70,7 @@ class Population(Swarm):
                                         recovery_time=np.random.randint(1000, 1400),
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
-                                        mask_on=masked, infection_probability=0.1, underlying_conditions=conditions,
+                                        mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
                                         severe_case=severe)
             else:
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
@@ -80,7 +82,7 @@ class Population(Swarm):
                                         recovery_time=None,
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
-                                        mask_on=masked, infection_probability=0.1, underlying_conditions=conditions,
+                                        mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
                                         severe_case=False)
             self.check_border_collision(current_person)
             self.add_agent(current_person)
