@@ -5,7 +5,7 @@ def scenario1():
     lockdown = False
     social_distancing_probability = 0.0
     masked_proportion = 0
-    name = "scenario1"
+    name = "scenario 1"
     lockdown_threshold = 0.0
     airport = False
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
@@ -16,7 +16,7 @@ def scenario2():
     lockdown = False
     social_distancing_probability = 0.0
     masked_proportion = 0
-    name = "scenario2"
+    name = "scenario 2"
     lockdown_threshold = 0.0
     airport = False
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
@@ -27,7 +27,7 @@ def scenario3():
     lockdown = True
     social_distancing_probability = 0.0  # original 0.2
     masked_proportion = 0.0
-    name = "scenario3"
+    name = "scenario 3"
     lockdown_threshold = 0.07
     airport = False
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
@@ -38,7 +38,7 @@ def scenario4():
     lockdown = True
     social_distancing_probability = 0.0  # original 0.8
     masked_proportion = 0.9
-    name = "scenario4"
+    name = "scenario 4"
     lockdown_threshold = 0.07
     airport = False
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport]
@@ -49,7 +49,7 @@ def scenario5():
     lockdown = False
     social_distancing_probability = 0.0  # original 0.8
     masked_proportion = 0.9
-    name = "scenario5"
+    name = "scenario 5"
     lockdown_threshold = 0.0
     airport = True
     quarantine_time = 1400
@@ -62,12 +62,13 @@ def scenario6():
     lockdown = False
     social_distancing_probability = 0.0  # original 0.8
     masked_proportion = 0.3
-    name = "scenario6"
+    name = "scenario 6"
     lockdown_threshold = 0.0
     airport = True
     quarantine_time = 1000
+    vaccine_type = "Janssen"
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
-            quarantine_time]
+            quarantine_time,vaccine_type]
 
 
 # Relaxed Policy
@@ -75,7 +76,7 @@ def scenario7():
     lockdown = False
     social_distancing_probability = 0.0  # original 0.8
     masked_proportion = 0.0
-    name = "scenario7"
+    name = "scenario 7"
     lockdown_threshold = 0.0
     airport = True
     quarantine_time = 100

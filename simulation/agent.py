@@ -75,6 +75,7 @@ class Agent(pygame.sprite.Sprite):  # super class
         self.image_file = image
         self.width = width
         self.height = height
+        self.color = color
         if self.image_file is not None:  # load image from file
             if not Agent.base_image:
                 Agent.base_image, Agent.rect = image_with_rect(

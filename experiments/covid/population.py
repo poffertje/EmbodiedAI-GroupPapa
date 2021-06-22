@@ -36,11 +36,13 @@ class Population(Swarm):
 
         masked_agents = 0
         underlying_conditions = 0
-        infected_color = [255, 69, 0] # mildly infected are colored red
         infection_probability = 0.1
-
+        underlying_conditions_proportion = round(config["base"]["percentage_underlying"] * config["base"]["n_agents"])
+        severe_agents = 0
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
+            infected_color = [255, 69, 0]
+            state = "I"
 
             if masked_agents < config["base"]["n_agents"] * scenario()[2]:
                 masked = True
@@ -48,42 +50,50 @@ class Population(Swarm):
             else:
                 masked = False
 
-            if underlying_conditions < round(config["base"]["percentage_underlying"] * config["base"]["n_agents"]):
+            if underlying_conditions < underlying_conditions_proportion:
                 conditions = True
+                severe = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
+                if severe_agents <= 30:
+                    severe = True
+                    infected_color = [128, 0, 0]
+                    infection_probability = np.random.uniform(0.5, 0.6)
+                    state = "C"
+                    severe_agents += 1
                 underlying_conditions += 1
             else:
                 conditions = False
 
-            if conditions:
-                severe = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
-                if severe:
-                    infected_color = [128, 0, 0] # severely infected are colored maroon
-                    infection_probability = np.random.uniform(0.5, 0.6)
-
-
-            if index % 5 == 0:
-                current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="I", index=index,
-                                        color=infected_color, timer=1,
-                                        age=np.random.choice([np.random.randint(1, 25), np.random.randint(26, 64),
+            age = np.random.choice([np.random.randint(1, 25), np.random.randint(26, 64),
                                                               np.random.randint(65, 90)]
-                                                             , p=[0.28, 0.52, 0.20]),
+                                                             , p=[0.28, 0.52, 0.20])
+            if index % 5 == 0:
+                current_person = Person(pos=np.array(coordinates), v=None, flock=self, state=state, index=index,
+                                        color=infected_color, timer=1,
+                                        age=age,
                                         recovery_time=np.random.randint(1000, 1400),
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
-                                        severe_case=severe)
+                                        severe_case=severe,vaccinated=False,vaccination_timer=None)
             else:
+                if conditions:
+                    vaccination_timer = 50
+                elif 70 <= age <= 90:
+                    vaccination_timer = 300
+                elif 50 <= age <= 69:
+                    vaccination_timer = 600
+                elif 40 <= age <= 49:
+                    vaccination_timer = 900
+                else:
+                    vaccination_timer = 1200
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                         color=[255, 165, 0], timer=None,
-                                        age=np.random.choice(
-                                            [np.random.randint(1, 25), np.random.randint(26, 64),
-                                             np.random.randint(65, 90)]
-                                            , p=[0.28, 0.52, 0.20]),
+                                        age=age,
                                         recovery_time=None,
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
-                                        severe_case=False)
+                                        severe_case=False, vaccinated=False, vaccination_timer=vaccination_timer)
             self.check_border_collision(current_person)
             self.add_agent(current_person)
 

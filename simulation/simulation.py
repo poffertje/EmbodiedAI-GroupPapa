@@ -43,8 +43,13 @@ def _plot_covid(data) -> None:
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
     print("No. of Susceptible: ", data["S"][-1])
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
-    plt.plot(data["H"], label="Hospitalized", color="blue", linestyle='dashdot')  # Blue
+    plt.plot(data["H"], label="Hospitalized", color="grey", linestyle='dashdot')  # Grey
     plt.plot(data["C"], label="Severe", color="maroon", linestyle='dotted')  # Maroon
+    if scenarios()[7] == "Janssen":
+        plt.plot(data["V"], label="Vaccinated", color="blue", linestyle='dotted')  # Blue
+    elif scenarios()[7] == "Pfizer":
+        plt.plot(data["V1"], label="1st vaccination", color="blue", linestyle='dotted')  # Blue
+        plt.plot(data["V2"], label="2nd vaccination", color="magenta", linestyle='dotted')  # Magenta
     plt.title("Covid-19 Simulation S-I-R")
     plt.xlabel("Time")
     plt.ylabel("Population")
@@ -178,6 +183,7 @@ class Simulation:
 
         # initialize the environment and agent/obstacle positions
         self.initialize()
+        print("Executing",scenarios()[3])
 
         # Set the scenario
         lockdown = scenarios()[0]
@@ -194,8 +200,7 @@ class Simulation:
             for i in range(self.iter):
                 self.released = 0
                 for agent in self.swarm.agents:
-                    if agent.state == "I" and agent.severe_case == True and not agent.hospitalized and np.random.choice(
-                            [True, False], p=[0.05, 0.95]):
+                    if agent.state == "C" and not agent.hospitalized:
                         agent.hospital_check()
 
                     if agent.state == "R":
@@ -208,7 +213,6 @@ class Simulation:
                             agent.v = [x, y]
                             self.swarm.vacant_beds[agent.bed_nr] = True
                             self.swarm.hospitalization -= 1
-
                 self.check_hospital_occupation()
 
                 if lockdown:
@@ -339,28 +343,37 @@ class Simulation:
             coordinates_x = randrange(125, 295)
             coordinates_y = randrange(125, 295)
             coordinates = [coordinates_x, coordinates_y]
-
+            age = np.random.choice(
+                [np.random.randint(1, 25), np.random.randint(26, 64), np.random.randint(65, 90)]
+                , p=[0.28, 0.52, 0.20])
             if number_infected < 2:
                 number_infected += 1
                 state = "I"
                 color = [255, 69, 0]
                 timer = 1
                 recovery_timer = np.random.randint(1000, 1400)
+                vaccination_timer = None
             else:
                 state = "S"
                 color = [255, 165, 0]
                 timer = None
                 recovery_timer = None
+                if 70 <= age <= 90:
+                    vaccination_timer = 300
+                elif 50 <= age <= 69:
+                    vaccination_timer = 600
+                elif 40 <= age <= 49:
+                    vaccination_timer = 900
+                else:
+                    vaccination_timer = 1200
 
             self.swarm.add_agent(
                 Person(pos=np.array(coordinates), v=np.array([0.0, 0.0]), flock=self.swarm, state=state,
                        index=config["base"]["n_agents"] + i,
                        color=color, timer=timer,
-                       age=np.random.choice(
-                           [np.random.randint(1, 25), np.random.randint(26, 64), np.random.randint(65, 90)]
-                           , p=[0.28, 0.52, 0.20]),
+                       age=age,
                        recovery_time=recovery_timer,
                        social_distancing=np.random.choice([True, False],
                                                           p=[scenarios()[1], 1 - scenarios()[1]]),
-                       mask_on=True, infection_probability=0.0, underlying_conditions=None,
-                                        severe_case=None))
+                       mask_on=True, infection_probability=0.0, underlying_conditions=False,vaccination_timer=vaccination_timer,
+                                        severe_case=None,vaccinated=False))
