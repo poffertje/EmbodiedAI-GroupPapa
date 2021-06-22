@@ -358,14 +358,6 @@ class Simulation:
                 color = [255, 165, 0]
                 timer = None
                 recovery_timer = None
-                if 70 <= age <= 90:
-                    vaccination_timer = 300
-                elif 50 <= age <= 69:
-                    vaccination_timer = 600
-                elif 40 <= age <= 49:
-                    vaccination_timer = 900
-                else:
-                    vaccination_timer = 1200
 
             self.swarm.add_agent(
                 Person(pos=np.array(coordinates), v=np.array([0.0, 0.0]), flock=self.swarm, state=state,
@@ -375,5 +367,5 @@ class Simulation:
                        recovery_time=recovery_timer,
                        social_distancing=np.random.choice([True, False],
                                                           p=[scenarios()[1], 1 - scenarios()[1]]),
-                       mask_on=True, infection_probability=0.0, underlying_conditions=False,vaccination_timer=vaccination_timer,
+                       mask_on=True, infection_probability=0.0, underlying_conditions=False,vaccination_timer=None,
                                         severe_case=None,vaccinated=False))

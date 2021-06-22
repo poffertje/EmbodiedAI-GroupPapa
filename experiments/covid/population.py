@@ -5,7 +5,6 @@ from simulation.swarm import Swarm
 from simulation.utils import generate_coordinates
 from pygame.sprite import collide_mask
 import numpy as np
-
 PR_SEVERE = config["base"]["percentage_underlying"]
 
 
@@ -16,6 +15,8 @@ class Population(Swarm):
         super(Population, self).__init__(screen_size)
         self.lockdown = scenario()[0]
         self.airport = scenario()[5]
+        self.borders = scenario()[8]
+        self.hospital = scenario()[9]
 
     def initialize(self, num_agents: int) -> None:
         """
@@ -32,7 +33,11 @@ class Population(Swarm):
         if self.airport:
             self.add_airport()
 
-        self.add_hospital()
+        if self.hospital:
+            self.add_hospital()
+
+        if self.borders:
+            self.add_outer_border()
 
         masked_agents = 0
         underlying_conditions = 0
@@ -97,7 +102,7 @@ class Population(Swarm):
             self.check_border_collision(current_person)
             self.add_agent(current_person)
 
-    def add_lockdown(self):
+    def add_outer_border(self):
         obstacle_filename = "experiments/covid/images/Borders.png"
         obstacle_loc = [500, 500]
         obstacle_scale = [1000, 1000]
@@ -164,8 +169,11 @@ class Population(Swarm):
         for obj in self.objects.obstacles:
             while True:
                 if self.airport:
-                    while 120 <= person.pos[0] <= 330 and 120 <= person.pos[1] <= 330 \
-                            or 685 <= person.pos[0] <= 895 and 105 <= person.pos[1] <= 315:
+                    while 120 <= person.pos[0] <= 330 and 120 <= person.pos[1] <= 330:
+                        person.pos = np.array(generate_coordinates(self.screen))
+
+                if self.hospital:
+                    while 685 <= person.pos[0] <= 895 and 105 <= person.pos[1] <= 315:
                         person.pos = np.array(generate_coordinates(self.screen))
 
                 collide = collide_mask(person, obj)

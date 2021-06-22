@@ -8,7 +8,12 @@ from simulation.utils import *
 from experiments.covid.scenarios import scenario6 as scenarios
 
 PR_SEVERE = config["base"]["percentage_underlying"]
-
+#assuming 50 frames = 1 day
+#-----------------------------
+PFIZER_FIRST_IMMUNITY_TIME = 500
+PFIZER_SECOND_IMMUNITY_TIME = 700
+PFIZER_SECOND_SHOT_TIME = 1400
+JANSSEN_IMMUNITY_TIME = 500
 
 class Person(Agent):
     """ """
@@ -62,8 +67,7 @@ class Person(Agent):
         self.evaluate()
 
         # Check for vaccination
-        if self.state == "S":
-            # or self.state == "V1"
+        if self.state == "S" or self.state == "V1":
             self.vaccination_check()
 
         # Avoid obstacles
@@ -138,8 +142,8 @@ class Person(Agent):
             elif self.state == "V1":
                 if self.counter == self.second_dose_timer:
                     self.vaccination_timer += self.second_dose_timer + 1500
-                self.state = "V2"
-                Agent.set_color(self, (153, 50, 204))
+                    Agent.set_color(self, (153, 50, 204))
+                    self.state = "V2"
 
     def airport_control(self):
         if 110 <= self.pos[0] <= 330 and 315 <= self.pos[1] <= 340:
@@ -257,11 +261,6 @@ class Person(Agent):
 
         for neighbour in neighbours:
 
-            # social distancing
-            if self.social_distancing:
-                if dist(self.pos, neighbour.pos) <= self.radius_view:
-                    self.v = [neighbour.v[1], neighbour.v[0]]
-
             # probability of getting infected
             if (neighbour.state == "I" or neighbour.state == "C") and self.state == "S":
                 infected_color = (255, 69, 0)
@@ -271,7 +270,8 @@ class Person(Agent):
                 elif self.state == "V":
                     probability = probability * 0.34
                 elif self.state == "V2":
-                    probability = probability * 0.05
+                    if self.counter == self.vaccination_timer:
+                        probability = probability * 0.05
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
                     self.state = "I"
                     if self.underlying_conditions:

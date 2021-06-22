@@ -59,16 +59,18 @@ def scenario5():
 
 # Semi-enforced Policy e.g. Netherlands
 def scenario6():
+    border = True
     lockdown = False
     social_distancing_probability = 0.0  # original 0.8
     masked_proportion = 0.3
     name = "scenario 6"
     lockdown_threshold = 0.0
-    airport = True
+    airport = False
     quarantine_time = 1000
-    vaccine_type = "Janssen"
+    vaccine_type = "Pfizer"
+    hospital = True
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
-            quarantine_time,vaccine_type]
+            quarantine_time,vaccine_type,border,hospital]
 
 
 # Relaxed Policy
