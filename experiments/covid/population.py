@@ -61,7 +61,6 @@ class Population(Swarm):
                 if severe_agents <= 30:
                     severe = True
                     infected_color = [128, 0, 0]
-                    infection_probability = np.random.uniform(0.5, 0.6)
                     state = "C"
                     severe_agents += 1
                 underlying_conditions += 1
@@ -79,7 +78,7 @@ class Population(Swarm):
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
-                                        severe_case=severe,vaccinated=False,vaccination_timer=None)
+                                        severe_case=severe,vaccinated=None,vaccination_timer=None)
             else:
                 if conditions:
                     vaccination_timer = 50
@@ -98,7 +97,7 @@ class Population(Swarm):
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
-                                        severe_case=False, vaccinated=False, vaccination_timer=vaccination_timer)
+                                        severe_case=False, vaccinated=None, vaccination_timer=vaccination_timer)
             self.check_border_collision(current_person)
             self.add_agent(current_person)
 

@@ -198,15 +198,29 @@ class Simulation:
 
         else:
             for i in range(self.iter):
+                queue = []
                 self.released = 0
 
                 for agent in self.swarm.agents:
-                    if agent.state == "C" and not agent.hospitalized:
-                        agent.hospital_check()
+                    if not agent.hospitalized and agent.vaccinated is None:
+                        if agent.state == "C":
+                            queue.insert(0,agent.index)
+
+                        elif agent.underlying_conditions and agent.state == "I":
+                            queue.insert(1,agent.index)
+
+                if len(queue) != 0:
+                    considered_index = queue.pop(0)
+
+                for agent in self.swarm.agents:
+                    if len(queue) != 0:
+                        if agent.index == considered_index:
+                            agent.hospital_check()
 
                     if agent.state == "R":
                         if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315 and agent.hospitalized:
                             self.released += 1
+                            print("1")
                         elif not (685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 320) and agent.hospitalized:
                             agent.hospitalized = False
                             x = randrange(-1, 1)
@@ -214,6 +228,7 @@ class Simulation:
                             agent.v = [x, y]
                             self.swarm.vacant_beds[agent.bed_nr] = True
                             self.swarm.hospitalization -= 1
+
                 self.check_hospital_occupation()
 
                 if lockdown:
@@ -233,7 +248,7 @@ class Simulation:
                             if agent.index >= config["base"]["n_agents"]:
                                 agent.v = [0.0, 1.0]
                     elif i >= self.iter / 4 + scenarios()[6]:
-                        if self.airport_open == True:
+                        if self.airport_open:
                             self.check_airport_occupation()
 
                 self.simulate()

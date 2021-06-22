@@ -8,12 +8,13 @@ from simulation.utils import *
 from experiments.covid.scenarios import scenario6 as scenarios
 
 PR_SEVERE = config["base"]["percentage_underlying"]
-#assuming 50 frames = 1 day
-#-----------------------------
+# assuming 50 frames = 1 day
+# -----------------------------
 PFIZER_FIRST_IMMUNITY_TIME = 500
 PFIZER_SECOND_IMMUNITY_TIME = 700
 PFIZER_SECOND_SHOT_TIME = 1400
 JANSSEN_IMMUNITY_TIME = 500
+
 
 class Person(Agent):
     """ """
@@ -67,14 +68,14 @@ class Person(Agent):
         self.evaluate()
 
         # Check for vaccination
-        if self.state == "S" or self.state == "V1":
+        if self.state == "S" or self.vaccinated == "V1":
             self.vaccination_check()
 
         # Avoid obstacles
         self.check_for_obstacles()
 
         # Make sure that hospitalized agents remain in their bed
-        if self.hospitalized and self.state == "I":
+        if self.hospitalized and (self.state == "I" or self.state == "C"):
             self.v = [0.0, 0.0]
 
         # Random stopping of agents to have more natural behaviour
@@ -124,26 +125,24 @@ class Person(Agent):
     def vaccination_check(self):
         if scenarios()[7] == "Janssen":
             if self.counter == self.vaccination_timer and self.vaccination_timer is not None:
-            # take mask of right before vaccination
-                self.take_mask_of()
                 if self.state == "S":
                     if self.underlying_conditions:
                         self.p_severe = self.p_severe * 0.2
-                    self.state = "V"
+                    self.vaccinated = "V"
                     Agent.set_color(self, (100, 149, 237))
         elif scenarios()[7] == "Pfizer":
             if self.counter == self.vaccination_timer and self.vaccination_timer is not None:
-                if self.state == "S":
+                if self.state == "S" and self.vaccinated != "V1":
                     if self.underlying_conditions:
                         self.p_severe = self.p_severe * 0.2
-                    self.state = "V1"
+                    self.vaccinated = "V1"
                     Agent.set_color(self, (100, 149, 237))
                     self.second_dose_timer = self.vaccination_timer + 1400
-            elif self.state == "V1":
+            elif self.vaccinated == "V1":
                 if self.counter == self.second_dose_timer:
                     self.vaccination_timer += self.second_dose_timer + 1500
                     Agent.set_color(self, (153, 50, 204))
-                    self.state = "V2"
+                    self.vaccinated = "V2"
 
     def airport_control(self):
         if 110 <= self.pos[0] <= 330 and 315 <= self.pos[1] <= 340:
@@ -163,6 +162,8 @@ class Person(Agent):
                 self.flock.datapoints.append(agent.state)
                 if agent.hospitalized:
                     self.flock.datapoints.append("H")
+                if agent.vaccinated is not None:
+                    self.flock.datapoints.append(agent.vaccinated)
 
             current_nr_of_agents = len(self.flock.agents)
 
@@ -184,12 +185,13 @@ class Person(Agent):
         color = (255, 69, 0)
         if self.severe_case:
             color = (128, 0, 0)
-        if self.vaccinated:
+        if self.vaccinated is not None:
             color = (100, 149, 237)
         self.infection_probability = 0.1
         Agent.set_color(self, color)
 
     def hospital_check(self):
+        print(self.flock.vacant_beds)
         if any(self.flock.vacant_beds.values()):
             vacant_beds = [k for k, v in self.flock.vacant_beds.items() if v == True]
             i = random.choice(vacant_beds)
@@ -240,7 +242,7 @@ class Person(Agent):
             a, h, k = 1.1, 11.4, 8.7
             probability = ((a ** (self.age - h)) + k) / 10000
         if np.random.choice([True, False], p=[probability, 1 - probability]):
-           if self.index != 0:
+            if self.index != 0:
                 if self.hospitalized:
                     self.flock.hospitalization -= 1
                     self.flock.vacant_beds[self.bed_nr] = True
@@ -266,11 +268,11 @@ class Person(Agent):
             if (neighbour.state == "I" or neighbour.state == "C") and self.state == "S":
                 infected_color = (255, 69, 0)
                 probability = (self.infection_probability + neighbour.infection_probability) / 2
-                if self.state == "V1":
+                if self.vaccinated == "V1":
                     probability = probability * 0.30
-                elif self.state == "V":
+                elif self.vaccinated == "V":
                     probability = probability * 0.34
-                elif self.state == "V2":
+                elif self.vaccinated == "V2":
                     if self.counter == self.vaccination_timer:
                         probability = probability * 0.05
                 if np.random.choice([True, False], p=[probability, 1 - probability]):
@@ -282,6 +284,7 @@ class Person(Agent):
                             self.state = "C"
                     if self.mask_on:
                         Agent.set_color(self, infected_color, (0, 0, 8, 4))
+                        Agent.set_color(self, (255, 255, 255), (0, 4, 8, 4))
                     else:
                         Agent.set_color(self, infected_color)
                     self.timer = self.counter
