@@ -240,10 +240,11 @@ class Person(Agent):
             a, h, k = 1.1, 11.4, 8.7
             probability = ((a ** (self.age - h)) + k) / 10000
         if np.random.choice([True, False], p=[probability, 1 - probability]):
-            if self.hospitalized:
-                self.flock.hospitalization -= 1
-                self.flock.vacant_beds[self.bed_nr] = True
-            self.die()
+           if self.index != 0:
+                if self.hospitalized:
+                    self.flock.hospitalization -= 1
+                    self.flock.vacant_beds[self.bed_nr] = True
+                self.die()
         else:
             pass
 

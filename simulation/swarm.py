@@ -126,6 +126,7 @@ class Swarm(pygame.sprite.Sprite):
 
         for state in lst:
             values[state] += 1
+        print(values)
         for x in values:
             self.points_to_plot[x].append(values[x])
 
@@ -140,6 +141,7 @@ class Swarm(pygame.sprite.Sprite):
             agent.update_actions()
         if self.datapoints:
             self.add_point(self.datapoints)
+
         self.remain_in_screen()
 
     def display(self, screen: pygame.Surface) -> None:

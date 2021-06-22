@@ -41,7 +41,7 @@ def _plot_covid(data) -> None:
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
-    print("No. of Susceptible: ", data["S"][-1])
+    # print("No. of Susceptible: ", data["S"][-1])
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
     plt.plot(data["H"], label="Hospitalized", color="grey", linestyle='dashdot')  # Grey
     plt.plot(data["C"], label="Severe", color="maroon", linestyle='dotted')  # Maroon
@@ -199,6 +199,7 @@ class Simulation:
         else:
             for i in range(self.iter):
                 self.released = 0
+
                 for agent in self.swarm.agents:
                     if agent.state == "C" and not agent.hospitalized:
                         agent.hospital_check()
