@@ -14,10 +14,10 @@ class Population(Swarm):
     def __init__(self, screen_size) -> None:
         super(Population, self).__init__(screen_size)
         self.lockdown = scenario()[0]
-        self.airport = scenario()[5]
-        self.borders = scenario()[8]
-        self.vaccination = scenario()[7]
-        self.hospital = scenario()[9]
+        self.airport = scenario()[4]
+        self.borders = scenario()[7]
+        self.vaccination = scenario()[6]
+        self.hospital = scenario()[8]
 
     def initialize(self, num_agents: int) -> None:
         """

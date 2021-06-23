@@ -37,7 +37,7 @@ def _plot_covid(data) -> None:
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    output_name = folder + "/Covid-19-SIR-%s-%s.png" % (scenarios()[3], strftime("%H-%M-%S"))
+    output_name = folder + "/Covid-19-SIR-%s-%s.png" % (scenarios()[2], strftime("%H-%M-%S"))
 
     fig = plt.figure()
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
@@ -47,9 +47,9 @@ def _plot_covid(data) -> None:
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
     plt.plot(data["H"], label="Hospitalized", color="grey", linestyle='dashdot')  # Grey
     plt.plot(data["C"], label="Severe", color="maroon", linestyle='dotted')  # Maroon
-    if scenarios()[7] == "Janssen":
+    if scenarios()[6] == "Janssen":
         plt.plot(data["V"], label="Vaccinated", color="blue", linestyle='dotted')  # Blue
-    elif scenarios()[7] == "Pfizer" or scenarios()[7] == "Sinovac":
+    elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
         plt.plot(data["V1"], label="1st vaccination", color="blue", linestyle='dotted')  # Blue
         plt.plot(data["V2"], label="2nd vaccination", color="magenta", linestyle='dotted')  # Magenta
     plt.title("Covid-19 Simulation S-I-R")
@@ -190,12 +190,12 @@ class Simulation:
 
         # initialize the environment and agent/obstacle positions
         self.initialize()
-        print("Executing", scenarios()[3])
+        print("Executing", scenarios()[2])
 
         # Set the scenario
         lockdown = scenarios()[0]
-        airport = scenarios()[5]
-        hospital_policy = scenarios()[10]
+        airport = scenarios()[4]
+        hospital_policy = scenarios()[9]
 
         if self.iter == float("inf"):
             while self.running:

@@ -121,9 +121,9 @@ class Swarm(pygame.sprite.Sprite):
 
         """
         # Count current numbers
-        if scenarios()[7] == "Janssen":
+        if scenarios()[6] == "Janssen":
             values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V":0}
-        elif scenarios()[7] == "Pfizer" or scenarios()[7] == "Sinovac":
+        elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
             values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V1": 0, "V2": 0}
         else:
             values = {"S": 0, "I": 0, "E": 0, "R": 0, "D": 0, "H": 0, "C": 0}

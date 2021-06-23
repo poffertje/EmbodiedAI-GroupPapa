@@ -10,14 +10,14 @@ from experiments.covid.scenarios import scenario8 as scenarios
 PR_SEVERE = config["base"]["percentage_underlying"]
 # assuming 50 frames = 1 day
 # -----------------------------
-vaccine_type = scenarios()[7]
+vaccine_type = scenarios()[6]
 PINK = (255, 128, 209)
 BLUE = (100, 149, 237)
 MAGENTA = (153, 50, 204)
 RED = (255, 69, 0)
 GREEN = (0, 255, 0)
 MAROON = (128, 0, 0)
-AIRPORT = scenarios()[5]
+AIRPORT = scenarios()[4]
 if vaccine_type == 'Pfizer':
     FIRST_IMMUNITY_TIME = 350
     SECOND_IMMUNITY_TIME = 700
