@@ -11,7 +11,7 @@ from simulation.utils import randrange
 from scipy.interpolate import make_interp_spline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario9 as scenarios
+from experiments.covid.scenarios import scenario8 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -39,20 +39,26 @@ def _plot_covid(data) -> None:
 
     output_name = folder + "/Covid-19-SIR-%s-%s.png" % (scenarios()[2], strftime("%H-%M-%S"))
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(20,7))
+    plt.subplot(1, 2, 1,)
+    plt.title("Covid-19 Simulation S-E-I-R")
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
     plt.plot(data["E"], label="Exposed", color="pink")  # Pink
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
-    plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
-    plt.plot(data["H"], label="Hospitalized", color="grey", linestyle='dashdot')  # Grey
-    plt.plot(data["C"], label="Severe", color="maroon", linestyle='dotted')  # Maroon
     if scenarios()[6] == "Janssen":
         plt.plot(data["V"], label="Vaccinated", color="blue", linestyle='dotted')  # Blue
     elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
         plt.plot(data["V1"], label="1st vaccination", color="blue", linestyle='dotted')  # Blue
         plt.plot(data["V2"], label="2nd vaccination", color="magenta", linestyle='dotted')  # Magenta
-    plt.title("Covid-19 Simulation S-I-R")
+    plt.xlabel("Time")
+    plt.ylabel("Population")
+    plt.legend()
+    plt.subplot(1, 2, 2)
+    plt.title("Covid-19 Simulation: Dead, Hospitalised, Severe")
+    plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='dotted')  # Blue
+    plt.plot(data["H"], label="Hospitalized", color='blue')  # Grey
+    plt.plot(data["C"], label="Severe", color="maroon")  # Maroon
     plt.xlabel("Time")
     plt.ylabel("Population")
     plt.legend()
