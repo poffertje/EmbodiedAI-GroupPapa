@@ -3,7 +3,7 @@ import pygame
 from simulation.agent import Agent
 from simulation.objects import Objects
 from simulation.utils import dist
-from experiments.covid.scenarios import scenario9 as scenarios
+from experiments.covid.scenarios import scenario10 as scenarios
 
 """
 General swarm class that defines general swarm properties, which are common across different swarm types
@@ -39,9 +39,9 @@ class Swarm(pygame.sprite.Sprite):
         self.agents: list = []
         self.screen = screen_size
         self.objects: Objects = Objects()
-        if scenarios()[7] == "Janssen":
+        if scenarios()[6] == "Janssen":
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V": []}
-        elif scenarios()[7] == "Pfizer" or scenarios()[7] == "Sinovac":
+        elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V1": [], "V2": []}
         else:
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": []}

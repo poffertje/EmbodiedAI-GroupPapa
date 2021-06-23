@@ -1,6 +1,6 @@
 from experiments.covid.config import config
 from experiments.covid.person import Person
-from experiments.covid.scenarios import scenario9 as scenario
+from experiments.covid.scenarios import scenario10 as scenario
 from simulation.swarm import Swarm
 from simulation.utils import generate_coordinates
 from pygame.sprite import collide_mask

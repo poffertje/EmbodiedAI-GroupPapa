@@ -5,7 +5,7 @@ import time
 from experiments.covid.config import config
 from simulation.agent import Agent
 from simulation.utils import *
-from experiments.covid.scenarios import scenario9 as scenarios
+from experiments.covid.scenarios import scenario10 as scenarios
 
 PR_SEVERE = config["base"]["percentage_underlying"]
 # assuming 50 frames = 1 day

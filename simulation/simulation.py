@@ -11,7 +11,7 @@ from simulation.utils import randrange
 from scipy.interpolate import make_interp_spline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario9 as scenarios
+from experiments.covid.scenarios import scenario10 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
