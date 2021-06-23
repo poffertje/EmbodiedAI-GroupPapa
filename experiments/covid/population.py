@@ -130,29 +130,12 @@ class Population(Swarm):
 
         addition = 0
 
-        for i in range(4):
-            if i < 4:
-                self.objects.add_object(
-                    file=bed_filename, pos=[730 + addition, 155],
-                    scale=[25, 25], obj_type="site", index=-i - 2
-                )
-                addition += 40
-            if i >= 4 and i < 8:
-                if i == 4:
-                    addition = 0
-                self.objects.add_object(
-                    file=bed_filename, pos=[730 + addition, 210],
-                    scale=[25, 25], obj_type="site", index=-i - 2
-                )
-                addition += 40
-            if i >= 8 and i < 12:
-                if i == 8:
-                    addition = 0
-                self.objects.add_object(
-                    file=bed_filename, pos=[730 + addition, 265],
-                    scale=[25, 25], obj_type="site", index=-i - 2
-                )
-                addition += 40
+        for i in range(3):
+            self.objects.add_object(
+                file=bed_filename, pos=[735 + addition, 210],
+                scale=[25, 25], obj_type="site", index=-i - 2
+            )
+            addition += 55
 
     def add_airport(self):
         obstacle_filename = "experiments/covid/images/BordersAirport.png"

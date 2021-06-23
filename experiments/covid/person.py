@@ -259,39 +259,16 @@ class Person(Agent):
     def hospital_check(self):
         vacant_beds = [k for k, v in self.flock.vacant_beds.items() if v == True]
         i = random.choice(vacant_beds)
-        if i == 1 or i == 5 or i == 9:
-            if i == 1:
-                self.pos = np.array([730.0, 155.0])
-            elif i == 5:
-                self.pos = np.array([730.0, 210.0])
-            elif i == 9:
-                self.pos = np.array([730.0, 265.0])
-        elif i == 2 or i == 6 or i == 10:
-            addition = 40
-            if i == 2:
-                self.pos = np.array([730.0 + addition, 155.0])
-            elif i == 6:
-                self.pos = np.array([730.0 + addition, 210.0])
-            elif i == 10:
-                self.pos = np.array([730.0 + addition, 265.0])
+        if i == 1:
+            self.pos = np.array([735.0, 210.0])
+        elif i == 2:
+            addition = 55
+            self.pos = np.array([735.0 + addition, 210.0])
 
-        elif i == 3 or i == 7 or i == 11:
-            addition = 80
-            if i == 3:
-                self.pos = np.array([730.0 + addition, 155.0])
-            elif i == 7:
-                self.pos = np.array([730.0 + addition, 210.0])
-            elif i == 11:
-                self.pos = np.array([730.0 + addition, 265.0])
+        elif i == 3:
+            addition = 110
+            self.pos = np.array([735.0 + addition, 210.0])
 
-        elif i == 4 or i == 8 or i == 12:
-            addition = 120
-            if i == 4:
-                self.pos = np.array([730.0 + addition, 155.0])
-            elif i == 8:
-                self.pos = np.array([730.0 + addition, 210.0])
-            elif i == 12:
-                self.pos = np.array([730.0 + addition, 265.0])
         self.v = [0., 0.]
         self.bed_nr = i
         self.flock.hospitalization += 1
