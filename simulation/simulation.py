@@ -1,3 +1,5 @@
+import random
+
 import matplotlib.pyplot as plt
 import os
 import pygame
@@ -40,6 +42,7 @@ def _plot_covid(data) -> None:
     fig = plt.figure()
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
+    plt.plot(data["E"], label="Exposed", color="pink")  # Pink
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
     # print("No. of Susceptible: ", data["S"][-1])
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
@@ -183,7 +186,7 @@ class Simulation:
 
         # initialize the environment and agent/obstacle positions
         self.initialize()
-        print("Executing",scenarios()[3])
+        print("Executing", scenarios()[3])
 
         # Set the scenario
         lockdown = scenarios()[0]
@@ -198,29 +201,33 @@ class Simulation:
 
         else:
             for i in range(self.iter):
-                queue = []
+                severe = []
+                infected_underlying = []
                 self.released = 0
 
                 for agent in self.swarm.agents:
-                    if not agent.hospitalized and agent.vaccinated is None:
+                    if not agent.hospitalized:
                         if agent.state == "C":
-                            queue.insert(0,agent.index)
-
+                            severe.append(agent)
                         elif agent.underlying_conditions and agent.state == "I":
-                            queue.insert(1,agent.index)
+                            infected_underlying.append(agent)
 
-                if len(queue) != 0:
-                    considered_index = queue.pop(0)
+
+                if any(self.swarm.vacant_beds.values()):
+                    if len(severe) != 0:
+                        considered_patient = random.choice(severe)
+                        considered_patient.hospital_check()
+                        print(considered_patient.state)
+
+                    elif len(infected_underlying) != 0:
+                        considered_patient = random.choice(infected_underlying)
+                        considered_patient.hospital_check()
+                        print(considered_patient.state)
 
                 for agent in self.swarm.agents:
-                    if len(queue) != 0:
-                        if agent.index == considered_index:
-                            agent.hospital_check()
-
                     if agent.state == "R":
                         if 685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 315 and agent.hospitalized:
                             self.released += 1
-                            print("1")
                         elif not (685 <= agent.pos[0] <= 895 and 105 <= agent.pos[1] <= 320) and agent.hospitalized:
                             agent.hospitalized = False
                             x = randrange(-1, 1)
@@ -383,5 +390,5 @@ class Simulation:
                        recovery_time=recovery_timer,
                        social_distancing=np.random.choice([True, False],
                                                           p=[scenarios()[1], 1 - scenarios()[1]]),
-                       mask_on=True, infection_probability=0.0, underlying_conditions=False,vaccination_timer=None,
-                                        severe_case=None,vaccinated=False))
+                       mask_on=True, infection_probability=0.0, underlying_conditions=False, vaccination_timer=None,
+                       severe_case=None, vaccinated=False))

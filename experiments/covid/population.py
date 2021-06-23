@@ -5,8 +5,8 @@ from simulation.swarm import Swarm
 from simulation.utils import generate_coordinates
 from pygame.sprite import collide_mask
 import numpy as np
-PR_SEVERE = config["base"]["percentage_underlying"]
 
+PR_SEVERE = config["base"]["percentage_underlying"]
 
 class Population(Swarm):
     """Class that represents the Population for the Covid experiment. TODO"""
@@ -74,7 +74,7 @@ class Population(Swarm):
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state=state, index=index,
                                         color=infected_color, timer=1,
                                         age=age,
-                                        recovery_time=np.random.randint(1000, 1400),
+                                        recovery_time=np.random.randint(500, 700),
                                         social_distancing=np.random.choice([True, False],
                                                                            p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,

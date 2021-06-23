@@ -67,10 +67,10 @@ def scenario6():
     lockdown_threshold = 0.0
     airport = False
     quarantine_time = 1000
-    vaccine_type = "Pfizer"
+    vaccine_type = "Sinovac"
     hospital = True
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
-            quarantine_time,vaccine_type,border,hospital]
+            quarantine_time, vaccine_type, border, hospital]
 
 
 # Relaxed Policy
