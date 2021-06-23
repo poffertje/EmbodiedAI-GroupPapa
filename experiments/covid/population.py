@@ -130,7 +130,7 @@ class Population(Swarm):
 
         addition = 0
 
-        for i in range(12):
+        for i in range(4):
             if i < 4:
                 self.objects.add_object(
                     file=bed_filename, pos=[730 + addition, 155],

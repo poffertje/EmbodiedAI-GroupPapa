@@ -300,8 +300,10 @@ class Person(Agent):
         self.flock.vacant_beds[i] = False
 
     def check_death(self):
-        if self.severe_case:
+        if self.severe_case and not self.hospitalized:
             probability = np.random.uniform(0.5, 0.6)
+        elif self.severe_case and self.hospitalized:
+            probability = 0.21
         else:
             a, h, k = 1.1, 11.4, 8.7
             probability = ((a ** (self.age - h)) + k) / 10000
