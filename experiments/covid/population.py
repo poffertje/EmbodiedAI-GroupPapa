@@ -1,6 +1,6 @@
 from experiments.covid.config import config
 from experiments.covid.person import Person
-from experiments.covid.scenarios import scenario8 as scenario
+from experiments.covid.scenarios import scenario9 as scenario
 from simulation.swarm import Swarm
 from simulation.utils import generate_coordinates
 from pygame.sprite import collide_mask
@@ -51,7 +51,7 @@ class Population(Swarm):
             infected_color = [255, 69, 0]
             state = "I"
 
-            if masked_agents < config["base"]["n_agents"] * scenario()[2]:
+            if masked_agents < config["base"]["n_agents"] * scenario()[1]:
                 masked = True
                 masked_agents += 1
             else:
@@ -77,8 +77,6 @@ class Population(Swarm):
                                         color=infected_color, timer=1,
                                         age=age,
                                         recovery_time=np.random.randint(500, 700),
-                                        social_distancing=np.random.choice([True, False],
-                                                                           p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
                                         severe_case=severe,vaccinated=None,vaccination_timer=None)
             else:
@@ -99,8 +97,6 @@ class Population(Swarm):
                                         color=[255, 165, 0], timer=None,
                                         age=age,
                                         recovery_time=None,
-                                        social_distancing=np.random.choice([True, False],
-                                                                           p=[scenario()[1], 1 - scenario()[1]]),
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
                                         severe_case=False, vaccinated=None, vaccination_timer=vaccination_timer)
             self.check_border_collision(current_person)

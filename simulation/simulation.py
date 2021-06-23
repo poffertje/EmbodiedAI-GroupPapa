@@ -11,7 +11,7 @@ from simulation.utils import randrange
 from scipy.interpolate import make_interp_spline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario8 as scenarios
+from experiments.covid.scenarios import scenario9 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -404,7 +404,5 @@ class Simulation:
                        color=color, timer=timer,
                        age=age,
                        recovery_time=recovery_timer,
-                       social_distancing=np.random.choice([True, False],
-                                                          p=[scenarios()[1], 1 - scenarios()[1]]),
                        mask_on=True, infection_probability=0.0, underlying_conditions=False, vaccination_timer=None,
                        severe_case=None, vaccinated=False))

@@ -82,7 +82,7 @@ def scenario7():
     lockdown_threshold = 0.0
     airport = True
     quarantine_time = 100
-    return [lockdown, masked_proportion, name, lockdown_threshold, airport,
+    return [lockdown, social_distancing_probability,masked_proportion, name, lockdown_threshold, airport,
             quarantine_time]
 
 #---------------------------------------------

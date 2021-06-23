@@ -5,7 +5,7 @@ import time
 from experiments.covid.config import config
 from simulation.agent import Agent
 from simulation.utils import *
-from experiments.covid.scenarios import scenario8 as scenarios
+from experiments.covid.scenarios import scenario9 as scenarios
 
 PR_SEVERE = config["base"]["percentage_underlying"]
 # assuming 50 frames = 1 day
@@ -44,8 +44,8 @@ class Person(Agent):
     """ """
 
     def __init__(
-            self, pos, v, flock, state, index: int, color, timer, age, recovery_time, social_distancing, mask_on,
-            infection_probability, underlying_conditions, severe_case, vaccinated, vaccination_timer
+            self, pos, v, flock, state, index: int, color, timer, age, recovery_time, mask_on, infection_probability,
+            underlying_conditions, severe_case, vaccinated, vaccination_timer
     ) -> None:
         super(Person, self).__init__(
             pos,
@@ -73,7 +73,6 @@ class Person(Agent):
         self.prev_pos = None
         self.prev_v = None
         self.mask_on = mask_on
-        self.social_distancing = social_distancing
         self.previous_nr_of_agents = config["base"]["n_agents"]
         self.population_size = config["base"]["n_agents"]
         self.airport_open = False
