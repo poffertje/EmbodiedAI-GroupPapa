@@ -5,7 +5,7 @@ import time
 from experiments.covid.config import config
 from simulation.agent import Agent
 from simulation.utils import *
-from experiments.covid.scenarios import scenario6 as scenarios
+from experiments.covid.scenarios import scenario8 as scenarios
 
 PR_SEVERE = config["base"]["percentage_underlying"]
 # assuming 50 frames = 1 day
@@ -24,14 +24,14 @@ if vaccine_type == 'Pfizer':
     SECOND_SHOT_TIME = 1400  # 28 days
     FIRST_IMMUNITY_PROB = (1 - 0.685)
     SECOND_IMMUNITY_PROB = (1 - 0.95)
-    FIRST_SEVERE_PROB = None
+    FIRST_SEVERE_PROB = 0.57
     SECOND_SEVERE_PROB = 0.047
 elif vaccine_type == 'Sinovac':
     FIRST_IMMUNITY_TIME = 350
     SECOND_IMMUNITY_TIME = 700
     SECOND_SHOT_TIME = 800  # about 2 weeks
     FIRST_IMMUNITY_PROB = (1 - 0.16)
-    FIRST_SEVERE_PROB = None  # need to find
+    FIRST_SEVERE_PROB = 0  # need to find
     SECOND_IMMUNITY_PROB = (1 - 0.67)
     SECOND_SEVERE_PROB = 0
 else:
@@ -87,15 +87,18 @@ class Person(Agent):
         self.p_severe = PR_SEVERE
         self.second_dose_timer = None
         self.incubation_period = 0
+        self.second_severe_attack = 250
+        self.second_severe_timer = None
 
     def update_actions(self):
         # Obtain statistics of the current population
         self.evaluate()
 
         # Check for vaccination
-        if self.state == "S" or self.state == "E" or (self.vaccinated == "V1" and self.state != "I") or \
-                (self.vaccinated == "V1" and self.state != "C"):
-            self.vaccination_check()
+        if vaccine_type is not None:
+            if self.state == "S" or self.state == "E" or (self.vaccinated == "V1" and self.state != "I") or \
+                    (self.vaccinated == "V1" and self.state != "C"):
+                self.vaccination_check()
 
         # After incubation period has passed, make agent infected.
         if self.counter == self.incubation_period:
@@ -124,6 +127,12 @@ class Person(Agent):
                 self.check_death()
             elif (self.counter - self.timer) == self.recovery_time:
                 self.recover()
+            elif self.state == "I" and self.underlying_conditions and self.timer == self.second_severe_timer:
+                self.severe_case = np.random.choice([True, False], p=[self.p_severe, 1 - self.p_severe])
+                if self.severe_case:
+                    infected_color = MAROON
+                    self.state = "C"
+                    Agent.set_color(self, infected_color)
 
         if AIRPORT:
             if self.index >= config["base"]["n_agents"]:
@@ -157,6 +166,7 @@ class Person(Agent):
         infected_color = RED
         self.state = "I"
         if self.underlying_conditions:
+            self.second_severe_timer = self.counter + self.second_severe_attack
             self.severe_case = np.random.choice([True, False], p=[self.p_severe, 1 - self.p_severe])
             if self.severe_case:
                 infected_color = MAROON
@@ -190,7 +200,7 @@ class Person(Agent):
                     # should kick in
                     if self.mask_on:
                         Agent.set_color(self, (255, 255, 255), (0, 4, 8, 4))
-            elif self.vaccinated == "V1":  # SECOND SHOT
+            elif self.vaccinated == "V1" and self.state != "I" and self.state != "C":  # SECOND SHOT
                 if self.counter == self.second_dose_timer:
                     Agent.set_color(self, MAGENTA)
                     self.vaccination_timer += SECOND_IMMUNITY_TIME  # new timer for when the second dose's immunity
@@ -240,10 +250,10 @@ class Person(Agent):
     def take_mask_of(self):
         self.mask_on = False
         color = (255, 69, 0)
-        if self.severe_case:
-            color = (128, 0, 0)
-        if self.vaccinated is not None:
-            color = (100, 149, 237)
+        if self.state == "C":
+            color = MAROON
+        if self.state == "I":
+            color = RED
         self.infection_probability = 0.1
         Agent.set_color(self, color)
 

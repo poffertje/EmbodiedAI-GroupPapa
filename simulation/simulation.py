@@ -11,7 +11,7 @@ from simulation.utils import randrange
 from scipy.interpolate import make_interp_spline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario6 as scenarios
+from experiments.covid.scenarios import scenario8 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -44,13 +44,12 @@ def _plot_covid(data) -> None:
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
     plt.plot(data["E"], label="Exposed", color="pink")  # Pink
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
-    # print("No. of Susceptible: ", data["S"][-1])
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='--')  # Blue
     plt.plot(data["H"], label="Hospitalized", color="grey", linestyle='dashdot')  # Grey
     plt.plot(data["C"], label="Severe", color="maroon", linestyle='dotted')  # Maroon
     if scenarios()[7] == "Janssen":
         plt.plot(data["V"], label="Vaccinated", color="blue", linestyle='dotted')  # Blue
-    elif scenarios()[7] == "Pfizer":
+    elif scenarios()[7] == "Pfizer" or scenarios()[7] == "Sinovac":
         plt.plot(data["V1"], label="1st vaccination", color="blue", linestyle='dotted')  # Blue
         plt.plot(data["V2"], label="2nd vaccination", color="magenta", linestyle='dotted')  # Magenta
     plt.title("Covid-19 Simulation S-I-R")
@@ -58,6 +57,10 @@ def _plot_covid(data) -> None:
     plt.ylabel("Population")
     plt.legend()
     fig.savefig(output_name)
+    print("No. of Susceptible: ", data["S"][-1])
+    print("No. of Death: ", data["D"][-1])
+    print("No. of Most Infected", max(data["I"]))
+    print("No. of Most Severely Infected", max(data["C"]))
     plt.show()
 
 
@@ -125,6 +128,7 @@ class Simulation:
         self.hospital_open = False
         self.released = 0
 
+
         # swarm settings
         self.num_agents = num_agents
         if self.swarm_type == "flock":
@@ -191,6 +195,7 @@ class Simulation:
         # Set the scenario
         lockdown = scenarios()[0]
         airport = scenarios()[5]
+        hospital_policy = scenarios()[10]
 
         if self.iter == float("inf"):
             while self.running:
@@ -203,26 +208,37 @@ class Simulation:
             for i in range(self.iter):
                 severe = []
                 infected_underlying = []
+                combined = []
                 self.released = 0
 
                 for agent in self.swarm.agents:
-                    if not agent.hospitalized:
-                        if agent.state == "C":
-                            severe.append(agent)
-                        elif agent.underlying_conditions and agent.state == "I":
-                            infected_underlying.append(agent)
+                    if hospital_policy:
+                        if not agent.hospitalized:
+                            if agent.state == "C":
+                                severe.append(agent)
+                            elif agent.underlying_conditions and agent.state == "I":
+                                infected_underlying.append(agent)
+                    elif not hospital_policy:
+                        if not agent.hospitalized:
+                            if agent.state == "C" or agent.state == "I":
+                                combined.append(agent)
 
 
                 if any(self.swarm.vacant_beds.values()):
-                    if len(severe) != 0:
-                        considered_patient = random.choice(severe)
-                        considered_patient.hospital_check()
-                        print(considered_patient.state)
+                    if hospital_policy:
 
-                    elif len(infected_underlying) != 0:
-                        considered_patient = random.choice(infected_underlying)
-                        considered_patient.hospital_check()
-                        print(considered_patient.state)
+                        if len(severe) != 0:
+                            considered_patient = random.choice(severe)
+                            considered_patient.hospital_check()
+
+                        elif len(infected_underlying) != 0:
+                            considered_patient = random.choice(infected_underlying)
+                            considered_patient.hospital_check()
+
+                    elif not hospital_policy:
+                        if len(combined) != 0:
+                            considered_patient = random.choice(combined)
+                            considered_patient.hospital_check()
 
                 for agent in self.swarm.agents:
                     if agent.state == "R":

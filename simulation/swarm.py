@@ -3,7 +3,7 @@ import pygame
 from simulation.agent import Agent
 from simulation.objects import Objects
 from simulation.utils import dist
-from experiments.covid.scenarios import scenario6 as scenarios
+from experiments.covid.scenarios import scenario8 as scenarios
 
 """
 General swarm class that defines general swarm properties, which are common across different swarm types
@@ -43,6 +43,8 @@ class Swarm(pygame.sprite.Sprite):
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V": []}
         elif scenarios()[7] == "Pfizer" or scenarios()[7] == "Sinovac":
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V1": [], "V2": []}
+        else:
+            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": []}
         self.datapoints: list = []
         self.hospitalization = 0
         self.vacant_beds = {1:True,2:True,3:True}
@@ -123,6 +125,8 @@ class Swarm(pygame.sprite.Sprite):
             values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V":0}
         elif scenarios()[7] == "Pfizer" or scenarios()[7] == "Sinovac":
             values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V1": 0, "V2": 0}
+        else:
+            values = {"S": 0, "I": 0, "E": 0, "R": 0, "D": 0, "H": 0, "C": 0}
 
         for state in lst:
             values[state] += 1

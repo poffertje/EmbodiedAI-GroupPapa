@@ -84,3 +84,88 @@ def scenario7():
     quarantine_time = 100
     return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
             quarantine_time]
+
+#---------------------------------------------
+# FINAL EXPERIMENTS
+# ---------------------------------------------
+
+# Base case:
+def scenario8():
+    border = True
+    lockdown = False
+    social_distancing_probability = 0.0  # original 0.8
+    masked_proportion = 0.60
+    name = "scenario 8"
+    lockdown_threshold = 0.0
+    airport = False
+    quarantine_time = 1000
+    vaccine_type = None
+    hospital = True
+    hospital_policy = False
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
+            quarantine_time, vaccine_type, border, hospital, hospital_policy]
+
+# Hospital Policy without vaccination
+def scenario9():
+    border = True
+    lockdown = False
+    social_distancing_probability = 0.0  # original 0.8
+    masked_proportion = 0.60
+    name = "scenario 9"
+    lockdown_threshold = 0.0
+    airport = False
+    quarantine_time = 1000
+    vaccine_type = None
+    hospital = True
+    hospital_policy = True
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
+            quarantine_time, vaccine_type, border, hospital, hospital_policy]
+
+# Hospital Policy with Sinovac
+def scenario10():
+    border = True
+    lockdown = False
+    social_distancing_probability = 0.0  # original 0.8
+    masked_proportion = 0.60
+    name = "scenario 10"
+    lockdown_threshold = 0.0
+    airport = False
+    quarantine_time = 1000
+    vaccine_type = "Sinovac"
+    hospital = True
+    hospital_policy = True
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
+            quarantine_time, vaccine_type, border, hospital, hospital_policy]
+
+# Hospital Policy with Pfizer
+def scenario11():
+    border = True
+    lockdown = False
+    social_distancing_probability = 0.0  # original 0.8
+    masked_proportion = 0.60
+    name = "scenario 11"
+    lockdown_threshold = 0.0
+    airport = False
+    quarantine_time = 1000
+    vaccine_type = 'Pfizer'
+    hospital = True
+    hospital_policy = True
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
+            quarantine_time, vaccine_type, border, hospital, hospital_policy]
+
+
+# Hospital Policy with Janssen
+def scenario12():
+    border = True
+    lockdown = False
+    social_distancing_probability = 0.0  # original 0.8
+    masked_proportion = 0.60
+    name = "scenario 12"
+    lockdown_threshold = 0.0
+    airport = False
+    quarantine_time = 1000
+    vaccine_type = 'Janssen'
+    hospital = True
+    hospital_policy = True
+    return [lockdown, social_distancing_probability, masked_proportion, name, lockdown_threshold, airport,
+            quarantine_time, vaccine_type, border, hospital, hospital_policy]

@@ -1,6 +1,6 @@
 from experiments.covid.config import config
 from experiments.covid.person import Person
-from experiments.covid.scenarios import scenario6 as scenario
+from experiments.covid.scenarios import scenario8 as scenario
 from simulation.swarm import Swarm
 from simulation.utils import generate_coordinates
 from pygame.sprite import collide_mask
@@ -16,6 +16,7 @@ class Population(Swarm):
         self.lockdown = scenario()[0]
         self.airport = scenario()[5]
         self.borders = scenario()[8]
+        self.vaccination = scenario()[7]
         self.hospital = scenario()[9]
 
     def initialize(self, num_agents: int) -> None:
@@ -38,6 +39,7 @@ class Population(Swarm):
 
         if self.borders:
             self.add_outer_border()
+
 
         masked_agents = 0
         underlying_conditions = 0
@@ -80,16 +82,19 @@ class Population(Swarm):
                                         mask_on=masked, infection_probability=infection_probability, underlying_conditions=conditions,
                                         severe_case=severe,vaccinated=None,vaccination_timer=None)
             else:
-                if conditions:
-                    vaccination_timer = 50
-                elif 70 <= age <= 90:
-                    vaccination_timer = 300
-                elif 50 <= age <= 69:
-                    vaccination_timer = 600
-                elif 40 <= age <= 49:
-                    vaccination_timer = 900
+                if self.vaccination != None:
+                    if conditions:
+                        vaccination_timer = 50
+                    elif 70 <= age <= 90:
+                        vaccination_timer = 300
+                    elif 50 <= age <= 69:
+                        vaccination_timer = 600
+                    elif 40 <= age <= 49:
+                        vaccination_timer = 900
+                    else:
+                        vaccination_timer = 1200
                 else:
-                    vaccination_timer = 1200
+                    vaccination_timer = None
                 current_person = Person(pos=np.array(coordinates), v=None, flock=self, state="S", index=index,
                                         color=[255, 165, 0], timer=None,
                                         age=age,
