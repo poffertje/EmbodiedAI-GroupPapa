@@ -74,7 +74,7 @@ def _plot_covid(data) -> None:
     print("No. of Death: ", data["D"][-1])
     print("No. of Most Infected", max(data["I"]))
     print("No. of Most Severely Infected", max(data["C"]))
-    print("No of Severe Deaths", data["SID"])
+    print("No of Severe Deaths", data["SID"][-1])
     plt.show()
 
 

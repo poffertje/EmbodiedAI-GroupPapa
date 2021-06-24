@@ -167,12 +167,13 @@ class Person(Agent):
         infected_color = RED
         self.state = "I"
         if self.underlying_conditions:
-            self.flock.underlying_infected +=1
             self.second_severe_timer = self.counter + self.second_severe_attack
             self.severe_case = np.random.choice([True, False], p=[self.p_severe, 1 - self.p_severe])
             if self.severe_case:
                 infected_color = MAROON
                 self.state = "C"
+            else:
+                self.flock.underlying_infected +=1
         if self.mask_on:
             Agent.set_color(self, infected_color, (0, 0, 8, 4))
             Agent.set_color(self, (255, 255, 255), (0, 4, 8, 4))
@@ -294,7 +295,7 @@ class Person(Agent):
         if np.random.choice([True, False], p=[probability, 1 - probability]):
             if self.severe_case:
                 self.flock.severe_deaths +=1
-            if self.underlying_conditions:
+            if self.underlying_conditions and not self.severe_case:
                 self.flock.underlying_infected -= 1
             if self.index != 0:
                 if self.hospitalized:
@@ -306,14 +307,14 @@ class Person(Agent):
 
     def recover(self):
         Agent.set_color(self, [0, 255, 0])
+        if self.underlying_conditions and self.state =="I":
+            self.flock.underlying_infected -= 1
         self.state = "R"
         self.timer = None
         if self.mask_on:
             self.mask_on = False
         if self.hospitalized:
             self.v = [0.0, 1.0]
-        if self.underlying_conditions:
-            self.flock.underlying_infected -= 1
         if self.severe_case:
             self.severe_case = False
 
