@@ -93,8 +93,6 @@ class Person(Agent):
         # Obtain statistics of the current population
         self.evaluate()
 
-        if self.severe_case:
-            print(self.state)
         # Check for vaccination
         if vaccine_type is not None:
             if self.state == "S" or self.state == "E" or (self.vaccinated == "V1" and self.state != "I") or \
