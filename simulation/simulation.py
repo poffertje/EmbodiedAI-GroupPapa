@@ -75,8 +75,11 @@ def _plot_covid(data) -> None:
     print("No. of Most Infected", max(data["I"]))
     print("No. of Most Severely Infected", max(data["C"]))
     print("No of Severe Deaths", data["SID"][-1])
-    print("No. of First Shot", data["V1"][-1])
-    print("No. of Second Shot", data["V2"][-1])
+    if scenarios()[6] == "Janssen":
+        print("No. of First Shot", data["V"][-1])
+    elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
+        print("No. of First Shot", data["V1"][-1])
+        print("No. of Second Shot", data["V2"][-1])
     plt.show()
 
 
