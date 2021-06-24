@@ -1,6 +1,7 @@
 import random
 
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import os
 import pygame
 import numpy as np
@@ -59,6 +60,12 @@ def _plot_covid(data) -> None:
     plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='dotted')  # Blue
     plt.plot(data["H"], label="Hospitalized", color='blue')  # Grey
     plt.plot(data["C"], label="Severe", color="maroon")  # Maroon
+    plt.plot(data["SID"], label = "Severe Death", color ="crimson",linestyle='dotted' )
+    plt.plot(data["UI"], label = "Infected (UC)", color ="red")
+
+    #plt.tick_params(axis='x', labelsize=8)
+    #plt.xticks(np.arange(0, len(data['UI'])+1, 250))
+
     plt.xlabel("Time")
     plt.ylabel("Population")
     plt.legend()
@@ -67,6 +74,7 @@ def _plot_covid(data) -> None:
     print("No. of Death: ", data["D"][-1])
     print("No. of Most Infected", max(data["I"]))
     print("No. of Most Severely Infected", max(data["C"]))
+    print("No of Severe Deaths", data["SID"])
     plt.show()
 
 

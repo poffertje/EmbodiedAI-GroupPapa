@@ -165,6 +165,7 @@ class Person(Agent):
         infected_color = RED
         self.state = "I"
         if self.underlying_conditions:
+            self.flock.underlying_infected +=1
             self.second_severe_timer = self.counter + self.second_severe_attack
             self.severe_case = np.random.choice([True, False], p=[self.p_severe, 1 - self.p_severe])
             if self.severe_case:
@@ -230,7 +231,10 @@ class Person(Agent):
                     self.flock.datapoints.append("H")
                 if agent.vaccinated is not None:
                     self.flock.datapoints.append(agent.vaccinated)
-
+            for i in range(self.flock.severe_deaths - 1):
+                self.flock.datapoints.append("SID")
+            for i in range(self.flock.underlying_infected - 1):
+                self.flock.datapoints.append("UI")
             current_nr_of_agents = len(self.flock.agents)
 
             if self.previous_nr_of_agents < current_nr_of_agents:
@@ -285,6 +289,11 @@ class Person(Agent):
             a, h, k = 1.1, 11.4, 8.7
             probability = ((a ** (self.age - h)) + k) / 10000
         if np.random.choice([True, False], p=[probability, 1 - probability]):
+            if self.severe_case and self.state == 'C':
+                print(self.state)
+                self.flock.severe_deaths +=1
+            if self.underlying_conditions:
+                self.flock.underlying_infected -= 1
             if self.index != 0:
                 if self.hospitalized:
                     self.flock.hospitalization -= 1
@@ -301,6 +310,8 @@ class Person(Agent):
             self.mask_on = False
         if self.hospitalized:
             self.v = [0.0, 1.0]
+        if self.underlying_conditions:
+            self.flock.underlying_infected -= 1
 
     def infect_distancing(self):
         neighbours = self.flock.find_neighbors(self, self.radius_view)

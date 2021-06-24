@@ -40,14 +40,16 @@ class Swarm(pygame.sprite.Sprite):
         self.screen = screen_size
         self.objects: Objects = Objects()
         if scenarios()[6] == "Janssen":
-            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V": []}
+            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V": [], "SID":[], "UI":[]}
         elif scenarios()[6] == "Pfizer" or scenarios()[7] == "Sinovac":
-            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V1": [], "V2": []}
+            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V1": [], "V2": [], "SID":[], "UI":[]}
         else:
-            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": []}
+            self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "SID":[], "UI":[]}
         self.datapoints: list = []
         self.hospitalization = 0
         self.vacant_beds = {1:True,2:True,3:True}
+        self.severe_deaths = 0
+        self.underlying_infected = 0
 
     def add_agent(self, agent: Agent) -> None:
         """
@@ -122,11 +124,11 @@ class Swarm(pygame.sprite.Sprite):
         """
         # Count current numbers
         if scenarios()[6] == "Janssen":
-            values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V":0}
+            values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V":0, "SID":0, "UI":0}
         elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
-            values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V1": 0, "V2": 0}
+            values = {"S": 0, "I": 0, "E":0, "R": 0, "D": 0, "H": 0, "C": 0, "V1": 0, "V2": 0, "SID":0, "UI":0}
         else:
-            values = {"S": 0, "I": 0, "E": 0, "R": 0, "D": 0, "H": 0, "C": 0}
+            values = {"S": 0, "I": 0, "E": 0, "R": 0, "D": 0, "H": 0, "C": 0, "SID":0, "UI":0}
 
         for state in lst:
             values[state] += 1
