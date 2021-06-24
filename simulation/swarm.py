@@ -41,7 +41,7 @@ class Swarm(pygame.sprite.Sprite):
         self.objects: Objects = Objects()
         if scenarios()[6] == "Janssen":
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V": [], "SID":[], "UI":[]}
-        elif scenarios()[6] == "Pfizer" or scenarios()[7] == "Sinovac":
+        elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "V1": [], "V2": [], "SID":[], "UI":[]}
         else:
             self.points_to_plot = {"S": [], "I": [], "E": [], "R": [], "D": [], "H": [], "C": [], "SID":[], "UI":[]}
