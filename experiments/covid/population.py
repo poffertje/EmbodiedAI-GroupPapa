@@ -6,8 +6,6 @@ from simulation.utils import generate_coordinates
 from pygame.sprite import collide_mask
 import numpy as np
 
-PR_SEVERE = config["base"]["percentage_underlying"]
-
 class Population(Swarm):
     """Class that represents the Population for the Covid experiment. TODO"""
 
@@ -50,6 +48,7 @@ class Population(Swarm):
             coordinates = generate_coordinates(self.screen)
             infected_color = [255, 69, 0]
             state = "I"
+            severe = False
 
             if masked_agents < config["base"]["n_agents"] * scenario()[1]:
                 masked = True
@@ -59,7 +58,6 @@ class Population(Swarm):
 
             if underlying_conditions < underlying_conditions_proportion:
                 conditions = True
-                severe = np.random.choice([True, False], p=[PR_SEVERE, 1 - PR_SEVERE])
                 if severe_agents <= 30:
                     severe = True
                     infected_color = [128, 0, 0]

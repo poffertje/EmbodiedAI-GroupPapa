@@ -93,6 +93,8 @@ class Person(Agent):
         # Obtain statistics of the current population
         self.evaluate()
 
+        if self.severe_case:
+            print(self.state)
         # Check for vaccination
         if vaccine_type is not None:
             if self.state == "S" or self.state == "E" or (self.vaccinated == "V1" and self.state != "I") or \
@@ -227,6 +229,7 @@ class Person(Agent):
         if self.index == 0:
             for agent in self.flock.agents:
                 self.flock.datapoints.append(agent.state)
+                severe = False
                 if agent.hospitalized:
                     self.flock.datapoints.append("H")
                 if agent.vaccinated is not None:
@@ -289,8 +292,7 @@ class Person(Agent):
             a, h, k = 1.1, 11.4, 8.7
             probability = ((a ** (self.age - h)) + k) / 10000
         if np.random.choice([True, False], p=[probability, 1 - probability]):
-            if self.severe_case and self.state == 'C':
-                print(self.state)
+            if self.severe_case:
                 self.flock.severe_deaths +=1
             if self.underlying_conditions:
                 self.flock.underlying_infected -= 1
@@ -312,6 +314,8 @@ class Person(Agent):
             self.v = [0.0, 1.0]
         if self.underlying_conditions:
             self.flock.underlying_infected -= 1
+        if self.severe_case:
+            self.severe_case = False
 
     def infect_distancing(self):
         neighbours = self.flock.find_neighbors(self, self.radius_view)
