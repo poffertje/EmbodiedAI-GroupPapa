@@ -12,7 +12,7 @@ from simulation.utils import randrange
 from scipy.interpolate import make_interp_spline
 
 from typing import Union, Tuple
-from experiments.covid.scenarios import scenario10 as scenarios
+from experiments.covid.scenarios import scenario12 as scenarios
 
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
@@ -47,6 +47,7 @@ def _plot_covid(data) -> None:
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
     plt.plot(data["E"], label="Exposed", color="pink")  # Pink
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
+    plt.plot(data["D"], label="Dead", color=(0, 0, 0))
     if scenarios()[6] == "Janssen":
         plt.plot(data["V"], label="Vaccinated", color="blue", linestyle='dotted')  # Blue
     elif scenarios()[6] == "Pfizer" or scenarios()[6] == "Sinovac":
@@ -57,11 +58,12 @@ def _plot_covid(data) -> None:
     plt.legend()
     plt.subplot(1, 2, 2)
     plt.title("Covid-19 Simulation: Dead, Hospitalised, Severe")
-    plt.plot(data["D"], label="Dead", color=(0, 0, 0), linestyle='dotted')  # Blue
     plt.plot(data["H"], label="Hospitalized", color='blue')  # Grey
-    plt.plot(data["C"], label="Severe", color="maroon")  # Maroon
-    plt.plot(data["SID"], label = "Severe Death", color ="crimson",linestyle='dotted' )
-    plt.plot(data["UI"], label = "Infected (UC)", color ="red")
+    #plt.plot(data["C"], label="Severe", color="maroon")  # Maroon
+    plt.plot(data["SID"], label = "Severe Death", color ="crimson",linestyle='dotted')
+    #plt.plot(data["UI"], label = "Infected (UC)", color ="red")
+    together = np.add(data['C'],data['UI'])
+    plt.plot(together, label="Need medical attention", color='red')
 
     #plt.tick_params(axis='x', labelsize=8)
     #plt.xticks(np.arange(0, len(data['UI'])+1, 250))
