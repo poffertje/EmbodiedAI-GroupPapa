@@ -5,7 +5,7 @@ import time
 from experiments.covid.config import config
 from simulation.agent import Agent
 from simulation.utils import *
-from experiments.covid.scenarios import scenario8 as scenarios
+from experiments.covid.scenarios import scenario10 as scenarios
 
 PR_SEVERE = config["base"]["percentage_underlying"]
 # assuming 50 frames = 1 day
@@ -192,7 +192,8 @@ class Person(Agent):
                     if self.mask_on:
                         Agent.set_color(self, (255, 255, 255), (0, 4, 8, 4))
         elif vaccine_type == "Pfizer" or vaccine_type == "Sinovac":
-            if self.counter == self.vaccination_timer and self.vaccination_timer is not None and self.vaccinated != "V1":
+            if self.counter == self.vaccination_timer and self.vaccination_timer is not None and self.vaccinated != "V1"\
+                    and self.vaccinated != "V2":
                 if self.state == "S" or self.state == "E":  # FIRST SHOT
                     self.vaccinated = "V1"
                     Agent.set_color(self, BLUE)
